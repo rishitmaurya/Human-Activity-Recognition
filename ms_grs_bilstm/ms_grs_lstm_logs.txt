@@ -1,0 +1,319 @@
+(env) PS D:\Rishit Mtech 2nd yr project\Human Gait\Code_stuff> python .\ms_grs_bilstm\ms_grs_lstm.py
+Found 210 files in dataset.
+Raw windows shape: (7395, 64, 75)
+Train shape: (5916, 64, 75) (5916, 7) Test shape: (1479, 64, 75) (1479, 7)
+2025-10-21 11:22:21.025053: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX AVX2
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Model: "MS_GatedResidualSkipLSTM"
+__________________________________________________________________________________________________
+ Layer (type)                   Output Shape         Param #     Connected to
+==================================================================================================
+ input_seq (InputLayer)         [(None, 64, 75)]     0           []
+
+ downsample_2 (Lambda)          (None, 32, 75)       0           ['input_seq[0][0]']
+
+ downsample_4 (Lambda)          (None, 16, 75)       0           ['input_seq[0][0]']
+
+ scale0_b1_bilstm (Bidirectiona  (None, 64, 128)     71680       ['input_seq[0][0]']
+ l)
+
+ scale1_b1_bilstm (Bidirectiona  (None, 32, 128)     71680       ['downsample_2[0][0]']
+ l)
+
+ scale2_b1_bilstm (Bidirectiona  (None, 16, 128)     71680       ['downsample_4[0][0]']
+ l)
+
+ scale0_b1_lstm_proj (TimeDistr  (None, 64, 64)      8256        ['scale0_b1_bilstm[0][0]']
+ ibuted)
+
+ scale1_b1_lstm_proj (TimeDistr  (None, 32, 64)      8256        ['scale1_b1_bilstm[0][0]']
+ ibuted)
+
+ scale2_b1_lstm_proj (TimeDistr  (None, 16, 64)      8256        ['scale2_b1_bilstm[0][0]']
+ ibuted)
+
+ scale0_b1_proj_td (TimeDistrib  (None, 64, 64)      4864        ['input_seq[0][0]']
+ uted)
+
+ dropout (Dropout)              (None, 64, 64)       0           ['scale0_b1_lstm_proj[0][0]']
+
+ scale1_b1_proj_td (TimeDistrib  (None, 32, 64)      4864        ['downsample_2[0][0]']
+ uted)
+
+ dropout_2 (Dropout)            (None, 32, 64)       0           ['scale1_b1_lstm_proj[0][0]']
+
+ scale2_b1_proj_td (TimeDistrib  (None, 16, 64)      4864        ['downsample_4[0][0]']
+ uted)
+
+ dropout_4 (Dropout)            (None, 16, 64)       0           ['scale2_b1_lstm_proj[0][0]']
+
+ concatenate (Concatenate)      (None, 64, 128)      0           ['scale0_b1_proj_td[0][0]',
+                                                                  'dropout[0][0]']
+
+ concatenate_2 (Concatenate)    (None, 32, 128)      0           ['scale1_b1_proj_td[0][0]',
+                                                                  'dropout_2[0][0]']
+
+ concatenate_4 (Concatenate)    (None, 16, 128)      0           ['scale2_b1_proj_td[0][0]',
+                                                                  'dropout_4[0][0]']
+
+ scale0_b1_gate (TimeDistribute  (None, 64, 64)      8256        ['concatenate[0][0]']
+ d)
+
+ scale1_b1_gate (TimeDistribute  (None, 32, 64)      8256        ['concatenate_2[0][0]']
+ d)
+
+ scale2_b1_gate (TimeDistribute  (None, 16, 64)      8256        ['concatenate_4[0][0]']
+ d)
+
+ lambda (Lambda)                (None, 64, 64)       0           ['scale0_b1_gate[0][0]']
+
+ lambda_2 (Lambda)              (None, 32, 64)       0           ['scale1_b1_gate[0][0]']
+
+ lambda_4 (Lambda)              (None, 16, 64)       0           ['scale2_b1_gate[0][0]']
+
+ multiply (Multiply)            (None, 64, 64)       0           ['scale0_b1_gate[0][0]',
+                                                                  'dropout[0][0]']
+
+ multiply_1 (Multiply)          (None, 64, 64)       0           ['lambda[0][0]',
+                                                                  'scale0_b1_proj_td[0][0]']
+
+ multiply_4 (Multiply)          (None, 32, 64)       0           ['scale1_b1_gate[0][0]',
+                                                                  'dropout_2[0][0]']
+
+ multiply_5 (Multiply)          (None, 32, 64)       0           ['lambda_2[0][0]',
+                                                                  'scale1_b1_proj_td[0][0]']
+
+ multiply_8 (Multiply)          (None, 16, 64)       0           ['scale2_b1_gate[0][0]',
+                                                                  'dropout_4[0][0]']
+
+ multiply_9 (Multiply)          (None, 16, 64)       0           ['lambda_4[0][0]',
+                                                                  'scale2_b1_proj_td[0][0]']
+
+ add (Add)                      (None, 64, 64)       0           ['multiply[0][0]',
+                                                                  'multiply_1[0][0]']
+
+ add_3 (Add)                    (None, 32, 64)       0           ['multiply_4[0][0]',
+                                                                  'multiply_5[0][0]']
+
+ add_6 (Add)                    (None, 16, 64)       0           ['multiply_8[0][0]',
+                                                                  'multiply_9[0][0]']
+
+ scale0_b2_bilstm (Bidirectiona  (None, 64, 128)     66048       ['add[0][0]']
+ l)
+
+ scale1_b2_bilstm (Bidirectiona  (None, 32, 128)     66048       ['add_3[0][0]']
+ l)
+
+ scale2_b2_bilstm (Bidirectiona  (None, 16, 128)     66048       ['add_6[0][0]']
+ l)
+
+ scale0_b2_lstm_proj (TimeDistr  (None, 64, 64)      8256        ['scale0_b2_bilstm[0][0]']
+ ibuted)
+
+ scale1_b2_lstm_proj (TimeDistr  (None, 32, 64)      8256        ['scale1_b2_bilstm[0][0]']
+ ibuted)
+
+ scale2_b2_lstm_proj (TimeDistr  (None, 16, 64)      8256        ['scale2_b2_bilstm[0][0]']
+ ibuted)
+
+ scale0_b2_proj_td (TimeDistrib  (None, 64, 64)      4160        ['add[0][0]']
+ uted)
+
+ dropout_1 (Dropout)            (None, 64, 64)       0           ['scale0_b2_lstm_proj[0][0]']
+
+ scale1_b2_proj_td (TimeDistrib  (None, 32, 64)      4160        ['add_3[0][0]']
+ uted)
+
+ dropout_3 (Dropout)            (None, 32, 64)       0           ['scale1_b2_lstm_proj[0][0]']
+
+ scale2_b2_proj_td (TimeDistrib  (None, 16, 64)      4160        ['add_6[0][0]']
+ uted)
+
+ dropout_5 (Dropout)            (None, 16, 64)       0           ['scale2_b2_lstm_proj[0][0]']
+
+ concatenate_1 (Concatenate)    (None, 64, 128)      0           ['scale0_b2_proj_td[0][0]',
+                                                                  'dropout_1[0][0]']
+
+ concatenate_3 (Concatenate)    (None, 32, 128)      0           ['scale1_b2_proj_td[0][0]',
+                                                                  'dropout_3[0][0]']
+
+ concatenate_5 (Concatenate)    (None, 16, 128)      0           ['scale2_b2_proj_td[0][0]',
+                                                                  'dropout_5[0][0]']
+
+ scale0_b2_gate (TimeDistribute  (None, 64, 64)      8256        ['concatenate_1[0][0]']
+ d)
+
+ scale1_b2_gate (TimeDistribute  (None, 32, 64)      8256        ['concatenate_3[0][0]']
+ d)
+
+ scale2_b2_gate (TimeDistribute  (None, 16, 64)      8256        ['concatenate_5[0][0]']
+ d)
+
+ lambda_1 (Lambda)              (None, 64, 64)       0           ['scale0_b2_gate[0][0]']
+
+ lambda_3 (Lambda)              (None, 32, 64)       0           ['scale1_b2_gate[0][0]']
+
+ lambda_5 (Lambda)              (None, 16, 64)       0           ['scale2_b2_gate[0][0]']
+
+ multiply_2 (Multiply)          (None, 64, 64)       0           ['scale0_b2_gate[0][0]',
+                                                                  'dropout_1[0][0]']
+
+ multiply_3 (Multiply)          (None, 64, 64)       0           ['lambda_1[0][0]',
+                                                                  'scale0_b2_proj_td[0][0]']
+
+ multiply_6 (Multiply)          (None, 32, 64)       0           ['scale1_b2_gate[0][0]',
+                                                                  'dropout_3[0][0]']
+
+ multiply_7 (Multiply)          (None, 32, 64)       0           ['lambda_3[0][0]',
+                                                                  'scale1_b2_proj_td[0][0]']
+
+ multiply_10 (Multiply)         (None, 16, 64)       0           ['scale2_b2_gate[0][0]',
+                                                                  'dropout_5[0][0]']
+
+ multiply_11 (Multiply)         (None, 16, 64)       0           ['lambda_5[0][0]',
+                                                                  'scale2_b2_proj_td[0][0]']
+
+ add_1 (Add)                    (None, 64, 64)       0           ['multiply_2[0][0]',
+                                                                  'multiply_3[0][0]']
+
+ add_4 (Add)                    (None, 32, 64)       0           ['multiply_6[0][0]',
+                                                                  'multiply_7[0][0]']
+
+ add_7 (Add)                    (None, 16, 64)       0           ['multiply_10[0][0]',
+                                                                  'multiply_11[0][0]']
+
+ add_2 (Add)                    (None, 64, 64)       0           ['add_1[0][0]',
+                                                                  'add[0][0]']
+
+ add_5 (Add)                    (None, 32, 64)       0           ['add_4[0][0]',
+                                                                  'add_3[0][0]']
+
+ add_8 (Add)                    (None, 16, 64)       0           ['add_7[0][0]',
+                                                                  'add_6[0][0]']
+
+ scale0_pool (GlobalAveragePool  (None, 64)          0           ['add_2[0][0]']
+ ing1D)
+
+ scale1_pool (GlobalAveragePool  (None, 64)          0           ['add_5[0][0]']
+ ing1D)
+
+ scale2_pool (GlobalAveragePool  (None, 64)          0           ['add_8[0][0]']
+ ing1D)
+
+ concat_scales (Concatenate)    (None, 192)          0           ['scale0_pool[0][0]',
+                                                                  'scale1_pool[0][0]',
+                                                                  'scale2_pool[0][0]']
+
+ fusion_dense (Dense)           (None, 128)          24704       ['concat_scales[0][0]']
+
+ dropout_6 (Dropout)            (None, 128)          0           ['fusion_dense[0][0]']
+
+ classifier (Dense)             (None, 7)            903         ['dropout_6[0][0]']
+
+==================================================================================================
+Total params: 564,935
+Trainable params: 564,935
+Non-trainable params: 0
+__________________________________________________________________________________________________
+Epoch 1/20
+
+Epoch 1: val_loss improved from inf to 0.22372, saving model to ms_grs_lstm_model.h5
+79/79 - 29s - loss: 0.6123 - accuracy: 0.7828 - val_loss: 0.2237 - val_accuracy: 0.9268 - lr: 0.0090 - 29s/epoch - 367ms/step
+Epoch 2/20
+
+Epoch 2: val_loss did not improve from 0.22372
+79/79 - 16s - loss: 0.2743 - accuracy: 0.9075 - val_loss: 0.3533 - val_accuracy: 0.9257 - lr: 0.0090 - 16s/epoch - 205ms/step
+Epoch 3/20
+
+Epoch 3: val_loss did not improve from 0.22372
+79/79 - 16s - loss: 0.4179 - accuracy: 0.8898 - val_loss: 0.2257 - val_accuracy: 0.9279 - lr: 0.0090 - 16s/epoch - 205ms/step
+Epoch 4/20
+
+Epoch 4: val_loss improved from 0.22372 to 0.12922, saving model to ms_grs_lstm_model.h5
+79/79 - 17s - loss: 0.2627 - accuracy: 0.9210 - val_loss: 0.1292 - val_accuracy: 0.9662 - lr: 0.0090 - 17s/epoch - 212ms/step
+Epoch 5/20
+
+Epoch 5: val_loss did not improve from 0.12922
+79/79 - 17s - loss: 0.2612 - accuracy: 0.9302 - val_loss: 0.1307 - val_accuracy: 0.9617 - lr: 0.0090 - 17s/epoch - 211ms/step
+Epoch 6/20
+
+Epoch 6: val_loss improved from 0.12922 to 0.09033, saving model to ms_grs_lstm_model.h5
+79/79 - 17s - loss: 0.1784 - accuracy: 0.9479 - val_loss: 0.0903 - val_accuracy: 0.9606 - lr: 0.0090 - 17s/epoch - 219ms/step
+Epoch 7/20
+
+Epoch 7: val_loss did not improve from 0.09033
+79/79 - 17s - loss: 0.1541 - accuracy: 0.9560 - val_loss: 0.1667 - val_accuracy: 0.9595 - lr: 0.0090 - 17s/epoch - 215ms/step
+Epoch 8/20
+
+Epoch 8: val_loss improved from 0.09033 to 0.07053, saving model to ms_grs_lstm_model.h5
+79/79 - 17s - loss: 0.1135 - accuracy: 0.9630 - val_loss: 0.0705 - val_accuracy: 0.9809 - lr: 0.0090 - 17s/epoch - 220ms/step
+Epoch 9/20
+
+Epoch 9: val_loss did not improve from 0.07053
+79/79 - 17s - loss: 0.1248 - accuracy: 0.9702 - val_loss: 0.2057 - val_accuracy: 0.9651 - lr: 0.0090 - 17s/epoch - 217ms/step
+Epoch 10/20
+
+Epoch 10: val_loss did not improve from 0.07053
+79/79 - 17s - loss: 0.3289 - accuracy: 0.9290 - val_loss: 0.6811 - val_accuracy: 0.7962 - lr: 0.0090 - 17s/epoch - 216ms/step
+Epoch 11/20
+
+Epoch 11: val_loss did not improve from 0.07053
+79/79 - 17s - loss: 0.6071 - accuracy: 0.8216 - val_loss: 0.3733 - val_accuracy: 0.8874 - lr: 0.0090 - 17s/epoch - 216ms/step
+Epoch 12/20
+
+Epoch 12: ReduceLROnPlateau reducing learning rate to 0.0044999998062849045.
+
+Epoch 12: val_loss did not improve from 0.07053
+79/79 - 17s - loss: 0.5082 - accuracy: 0.8755 - val_loss: 0.5307 - val_accuracy: 0.8525 - lr: 0.0090 - 17s/epoch - 211ms/step
+Epoch 13/20
+
+Epoch 13: val_loss did not improve from 0.07053
+79/79 - 17s - loss: 0.2883 - accuracy: 0.9079 - val_loss: 0.1226 - val_accuracy: 0.9583 - lr: 0.0045 - 17s/epoch - 211ms/step
+Epoch 14/20
+
+Epoch 14: val_loss did not improve from 0.07053
+79/79 - 17s - loss: 0.1410 - accuracy: 0.9499 - val_loss: 0.1170 - val_accuracy: 0.9741 - lr: 0.0045 - 17s/epoch - 210ms/step
+Epoch 15/20
+
+Epoch 15: val_loss did not improve from 0.07053
+79/79 - 17s - loss: 0.0840 - accuracy: 0.9741 - val_loss: 0.1058 - val_accuracy: 0.9752 - lr: 0.0045 - 17s/epoch - 209ms/step
+Epoch 16/20
+
+Epoch 16: ReduceLROnPlateau reducing learning rate to 0.0022499999031424522.
+Restoring model weights from the end of the best epoch: 8.
+
+Epoch 16: val_loss did not improve from 0.07053
+79/79 - 17s - loss: 0.0680 - accuracy: 0.9779 - val_loss: 0.0987 - val_accuracy: 0.9741 - lr: 0.0045 - 17s/epoch - 213ms/step
+Epoch 16: early stopping
+47/47 - 1s - loss: 0.0516 - accuracy: 0.9797 - 1s/epoch - 27ms/step
+Test loss: 0.0516  Test acc: 0.9797
+47/47 [==============================] - 3s 26ms/step
+ r2 score : 0.9780231011010625
+ Classification Report :
+              precision    recall  f1-score   support
+
+     bending     0.9982    0.9972    0.9977      1085
+     jumping     0.9344    0.9597    0.9469      1068
+     running     0.9571    0.9365    0.9467      1024
+     sitting     1.0000    1.0000    1.0000      1044
+       squat     1.0000    0.9952    0.9976      1040
+    standing     0.9955    1.0000    0.9977      1096
+     walking     1.0000    0.9942    0.9971      1038
+
+    accuracy                         0.9835      7395
+   macro avg     0.9836    0.9833    0.9834      7395
+weighted avg     0.9836    0.9835    0.9835      7395
+
+Confusion matrix:
+ [[217   0   0   0   0   0   0]
+ [  0 203  10   0   0   1   0]
+ [  0  14 191   0   0   0   0]
+ [  0   0   0 209   0   0   0]
+ [  2   1   0   0 205   0   0]
+ [  0   0   0   0   0 219   0]
+ [  0   2   0   0   0   0 205]]
+ Training history saved as training_history.json
+ Batch inference time: 2.7460 sec for 1479 samples
+ Average per-sample inference time: 0.001857 sec
+ Model size: 6.82 MB
+Saved model to ms_grs_lstm_model.h5

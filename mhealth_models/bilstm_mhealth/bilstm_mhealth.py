@@ -15,10 +15,10 @@ import time
 
 # Configuration
 CSV_PATH = "./combined_mhealth.csv"
-SEQ_LEN = 60                   # reduced sequence length for more noise
+SEQ_LEN = 200                   # reduced sequence length for more noise
 BATCH_SIZE = 256               # larger batch for faster but less stable training
 EPOCHS = 20
-LR = 5e-3                      # slightly higher LR to make convergence noisier 
+LR = 1e-3                      # slightly higher LR to make convergence noisier 
 RANDOM_SEED = 42
 
 OUTPUT_DIR = "./mhealth_models"
@@ -51,17 +51,25 @@ class MHealthDataset(Dataset):
         y_seq = self.y[idx + self.seq_len - 1]
         return torch.tensor(X_seq, dtype=torch.float32), torch.tensor(y_seq, dtype=torch.long)
 
-# LSTM model
-class SimpleLSTM(nn.Module):
-    """Single-layer LSTM for activity classification."""
-    def __init__(self, input_size, hidden_size, num_classes, dropout=0.3):
-        super(SimpleLSTM, self).__init__()
-        self.lstm = nn.LSTM(input_size, hidden_size, batch_first=True, dropout=dropout)
-        self.fc = nn.Linear(hidden_size, num_classes)
+# BiLSTM model
+class SimpleBiLSTM(nn.Module):
+    """Single-layer Bidirectional LSTM for activity classification."""
+    def __init__(self, input_size, hidden_size, num_classes, dropout=0.2):
+        super(SimpleBiLSTM, self).__init__()
+        self.bilstm = nn.LSTM(
+            input_size,
+            hidden_size,
+            batch_first=True,
+            dropout=dropout,
+            bidirectional=True
+        )
+        self.fc = nn.Linear(hidden_size * 2, num_classes)  # *2 for bidirectional output
 
     def forward(self, x):
-        _, (h_n, _) = self.lstm(x)
-        return self.fc(h_n[-1])
+        _, (h_n, _) = self.bilstm(x)
+        # Concatenate hidden states from both directions
+        h_cat = torch.cat((h_n[-2], h_n[-1]), dim=1)
+        return self.fc(h_cat)
 
 # Load dataset
 data = pd.read_csv(CSV_PATH)
@@ -94,9 +102,9 @@ test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, dro
 # Model setup
 input_size = X.shape[1]
 num_classes = len(label_classes)
-hidden_size = 64               # reduced hidden size for slightly lower accuracy
+hidden_size = 128               # reduced hidden size for slightly lower accuracy
 
-model = SimpleLSTM(input_size, hidden_size, num_classes).to(device)
+model = SimpleBiLSTM(input_size, hidden_size, num_classes).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=LR)
 

@@ -1,0 +1,55 @@
+(env) PS C:\rishit\Human-Activity-Recognition> python .\lstm_mhealth.py
+Using device: cuda
+Dataset shape: (1215745, 24)
+
+Starting training...
+
+Epoch 01/25 | Loss: 0.4833 | Test Acc: 84.67%
+Epoch 02/25 | Loss: 0.3342 | Test Acc: 86.24%
+Epoch 03/25 | Loss: 0.3004 | Test Acc: 87.24%
+Epoch 04/25 | Loss: 0.2817 | Test Acc: 87.81%
+Epoch 05/25 | Loss: 0.2686 | Test Acc: 88.11%
+Epoch 06/25 | Loss: 0.2600 | Test Acc: 88.26%
+Epoch 07/25 | Loss: 0.2526 | Test Acc: 88.52%
+Epoch 08/25 | Loss: 0.2468 | Test Acc: 88.60%
+Epoch 09/25 | Loss: 0.2420 | Test Acc: 88.76%
+Epoch 10/25 | Loss: 0.2378 | Test Acc: 88.71%
+Epoch 11/25 | Loss: 0.2342 | Test Acc: 88.90%
+Epoch 12/25 | Loss: 0.2309 | Test Acc: 88.23%
+Epoch 13/25 | Loss: 0.2280 | Test Acc: 89.01%
+Epoch 14/25 | Loss: 0.2253 | Test Acc: 88.99%
+Epoch 15/25 | Loss: 0.2226 | Test Acc: 88.89%
+Epoch 16/25 | Loss: 0.2205 | Test Acc: 88.58%
+Epoch 17/25 | Loss: 0.2183 | Test Acc: 88.65%
+Epoch 18/25 | Loss: 0.2164 | Test Acc: 88.83%
+Epoch 19/25 | Loss: 0.2136 | Test Acc: 88.86%
+Epoch 20/25 | Loss: 0.2121 | Test Acc: 88.87%
+Epoch 21/25 | Loss: 0.2123 | Test Acc: 88.93%
+Epoch 22/25 | Loss: 0.2103 | Test Acc: 88.49%
+Epoch 23/25 | Loss: 0.2088 | Test Acc: 88.68%
+Epoch 24/25 | Loss: 0.2072 | Test Acc: 88.81%
+Epoch 25/25 | Loss: 0.2057 | Test Acc: 88.74%
+
+Training completed. Best test accuracy: 89.01%
+Model saved to mhealth_simple_lstm.pth
+
+Final Evaluation:
+              precision    recall  f1-score   support
+
+           0       0.94      0.91      0.92    174413
+           1       0.70      0.96      0.81      6140
+           2       0.74      0.95      0.83      6139
+           3       0.80      0.90      0.85      6142
+           4       0.80      0.78      0.79      6139
+           5       0.80      0.71      0.75      6134
+           6       0.77      0.86      0.81      5661
+           7       0.77      0.86      0.81      5886
+           8       0.79      0.78      0.78      5866
+           9       0.78      0.88      0.83      6143
+          10       0.80      0.82      0.81      6136
+          11       0.81      0.84      0.83      6141
+          12       0.64      0.62      0.63      2068
+
+    accuracy                           0.89    243008
+   macro avg       0.78      0.83      0.80    243008
+weighted avg       0.89      0.89      0.89    243008

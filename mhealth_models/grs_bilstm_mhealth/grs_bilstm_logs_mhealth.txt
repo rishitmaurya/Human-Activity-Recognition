@@ -1,0 +1,63 @@
+(env) PS C:\rishit\Human-Activity-Recognition> python .\mhealth_models\grs_bilstm_mhealth\grs_bilstm_mhealth.py
+Using device: cuda
+Dataset shape: (1215745, 24)
+C:\Users\HP\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\nn\modules\rnn.py:123: UserWarning: dropout option adds dropout after all but last recurrent layer, so non-zero dropout expects num_layers greater than 1, but got dropout=0.5 and num_layers=1
+  warnings.warn(
+
+Starting training...
+
+Epoch 01/20 | Loss: 0.4634 | Val Acc: 86.79%
+Epoch 02/20 | Loss: 0.2915 | Val Acc: 89.21%
+Epoch 03/20 | Loss: 0.2514 | Val Acc: 89.90%
+Epoch 04/20 | Loss: 0.2284 | Val Acc: 90.89%
+Epoch 05/20 | Loss: 0.2120 | Val Acc: 91.44%
+Epoch 06/20 | Loss: 0.1987 | Val Acc: 91.73%
+Epoch 07/20 | Loss: 0.1883 | Val Acc: 91.94%
+Epoch 08/20 | Loss: 0.1787 | Val Acc: 92.16%
+Epoch 09/20 | Loss: 0.1706 | Val Acc: 92.19%
+Epoch 10/20 | Loss: 0.1634 | Val Acc: 92.27%
+Epoch 11/20 | Loss: 0.1448 | Val Acc: 92.68%
+Epoch 12/20 | Loss: 0.1380 | Val Acc: 92.70%
+Epoch 13/20 | Loss: 0.1335 | Val Acc: 92.66%
+Epoch 14/20 | Loss: 0.1293 | Val Acc: 92.64%
+Epoch 15/20 | Loss: 0.1253 | Val Acc: 92.53%
+Epoch 16/20 | Loss: 0.1211 | Val Acc: 92.47%
+Epoch 17/20 | Loss: 0.1177 | Val Acc: 92.61%
+Epoch 18/20 | Loss: 0.1145 | Val Acc: 92.60%
+Epoch 19/20 | Loss: 0.1113 | Val Acc: 92.53%
+Epoch 20/20 | Loss: 0.1077 | Val Acc: 92.31%
+
+Training completed. Best validation accuracy: 92.70%
+Model saved to: ./mhealth_models\grs_bilstm_mhealth.pth
+History saved to: ./mhealth_models\training_history.json
+Label classes saved to: ./mhealth_models\label_classes.json
+
+Test Accuracy: 92.3077%
+
+Final Evaluation:
+              precision    recall  f1-score   support
+
+           0   0.956018  0.937463  0.946650    174362
+           1   0.849881  0.811269  0.830126      6141
+           2   0.795965  0.899967  0.844777      6138
+           3   0.815767  0.924943  0.866931      6142
+           4   0.855511  0.878788  0.866993      6138
+           5   0.919796  0.881883  0.900441      6138
+           6   0.847896  0.926450  0.885434      5656
+           7   0.850676  0.919939  0.883953      5883
+           8   0.868155  0.908269  0.887759      5865
+           9   0.847796  0.899023  0.872658      6140
+          10   0.837156  0.892130  0.863769      6137
+          11   0.852693  0.874226  0.863326      6138
+          12   0.736419  0.708616  0.722250      2066
+
+    accuracy                       0.923077    242944
+   macro avg   0.848748  0.881767  0.864236    242944
+weighted avg   0.924886  0.923077  0.923593    242944
+
+
+Inference Time:
+ - Batch (size=256): 7.999 ms
+ - Single sample: 2.953 ms
+
+Model Size: 2.62 MB

@@ -22,7 +22,7 @@ LR = 1e-3                      # slightly higher LR to make convergence noisier
 RANDOM_SEED = 42
 
 OUTPUT_DIR = "./mhealth_models"
-MODEL_PATH = os.path.join(OUTPUT_DIR, "mhealth_simple_lstm.pth")
+MODEL_PATH = os.path.join(OUTPUT_DIR, "grs_bilstm_mhealth.pth")
 HISTORY_PATH = os.path.join(OUTPUT_DIR, "training_history.json")
 LABELS_PATH = os.path.join(OUTPUT_DIR, "label_classes.json")
 
@@ -55,27 +55,67 @@ class MHealthDataset(Dataset):
         return torch.tensor(X_seq, dtype=torch.float32), torch.tensor(y_seq, dtype=torch.long)
 
 
-# BiLSTM model
-class ImprovedBiLSTM(nn.Module):
-    """Two-layer Bidirectional LSTM for activity classification."""
+# GRS-BiLSTM model
+class GatedResidualSkipBiLSTM(nn.Module):
+    """
+    Gated Residual Skip BiLSTM:
+    Combines bidirectional LSTMs with residual and gating mechanisms.
+    This architecture improves gradient flow and captures both short- and long-term dependencies.
+    """
     def __init__(self, input_size, hidden_size, num_classes, num_layers=2, dropout=0.5):
         super().__init__()
-        self.bilstm = nn.LSTM(
+        self.num_layers = num_layers
+        self.hidden_size = hidden_size
+
+        # First BiLSTM layer
+        self.bilstm1 = nn.LSTM(
             input_size=input_size,
             hidden_size=hidden_size,
-            num_layers=num_layers,
+            num_layers=1,
             batch_first=True,
-            dropout=dropout,
-            bidirectional=True
+            bidirectional=True,
+            dropout=dropout
         )
+
+        # Second BiLSTM layer
+        self.bilstm2 = nn.LSTM(
+            input_size=hidden_size * 2,
+            hidden_size=hidden_size,
+            num_layers=1,
+            batch_first=True,
+            bidirectional=True,
+            dropout=dropout
+        )
+
+        # Gating mechanism to control residual blending
+        self.gate = nn.Sequential(
+            nn.Linear(hidden_size * 4, hidden_size * 2),
+            nn.Sigmoid()
+        )
+
+        # Output projection
         self.dropout = nn.Dropout(dropout)
         self.fc = nn.Linear(hidden_size * 2, num_classes)
 
     def forward(self, x):
-        _, (h_n, _) = self.bilstm(x)
-        # Take last hidden states from both directions
-        h_cat = torch.cat((h_n[-2], h_n[-1]), dim=1)
-        return self.fc(self.dropout(h_cat))
+        # First BiLSTM layer
+        out1, _ = self.bilstm1(x)
+
+        # Second BiLSTM layer
+        out2, _ = self.bilstm2(out1)
+
+        # Concatenate and apply gating for residual control
+        gate_input = torch.cat((out1, out2), dim=-1)
+        gate_values = self.gate(gate_input)
+
+        # Gated residual connection
+        out = gate_values * out2 + (1 - gate_values) * out1
+
+        # Take the last timestep (many-to-one)
+        last_out = out[:, -1, :]
+
+        return self.fc(self.dropout(last_out))
+
 
 # Load dataset
 data = pd.read_csv(CSV_PATH)
@@ -118,7 +158,7 @@ num_classes = len(label_classes)
 hidden_size = 128               # reduced hidden size for slightly lower accuracy                  # Start slightly lower
 CLIP = 5.0                 # Gradient clipping threshold
 
-model = ImprovedBiLSTM(input_size, hidden_size, num_classes).to(device)
+model = GatedResidualSkipBiLSTM(input_size, hidden_size, num_classes).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=LR)
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)

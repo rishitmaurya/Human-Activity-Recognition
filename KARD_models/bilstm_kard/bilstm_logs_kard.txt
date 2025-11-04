@@ -1,0 +1,85 @@
+(env) PS C:\rishit\Human-Activity-Recognition> python .\KARD_models\bilstm_kard\bilstm_kard.py
+Loading dataset: KARD_all_realworld.csv
+ Data shapes: 
+  X_train: (378, 310, 45) 
+  X_val: (81, 310, 45)
+  X_test: (81, 310, 45)
+Using device: cuda
+C:\Users\HP\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\nn\modules\rnn.py:123: UserWarning: dropout option adds dropout after all but last recurrent layer, so non-zero dropout expects num_layers greater than 1, but got dropout=0.45 and num_layers=1
+  warnings.warn(
+Epoch 001 | Train Acc: 10.05% | Val Acc: 33.33%
+Epoch 002 | Train Acc: 25.66% | Val Acc: 43.21%
+Epoch 003 | Train Acc: 31.22% | Val Acc: 46.91%
+Epoch 004 | Train Acc: 39.42% | Val Acc: 54.32%
+Epoch 005 | Train Acc: 41.01% | Val Acc: 54.32%
+Epoch 006 | Train Acc: 47.09% | Val Acc: 69.14%
+Epoch 007 | Train Acc: 57.41% | Val Acc: 72.84%
+Epoch 008 | Train Acc: 59.26% | Val Acc: 72.84%
+Epoch 009 | Train Acc: 62.96% | Val Acc: 77.78%
+Epoch 010 | Train Acc: 68.78% | Val Acc: 81.48%
+Epoch 011 | Train Acc: 69.05% | Val Acc: 81.48%
+Epoch 012 | Train Acc: 70.37% | Val Acc: 81.48%
+Epoch 013 | Train Acc: 70.11% | Val Acc: 87.65%
+Epoch 014 | Train Acc: 74.60% | Val Acc: 83.95%
+Epoch 015 | Train Acc: 76.46% | Val Acc: 83.95%
+Epoch 016 | Train Acc: 76.72% | Val Acc: 87.65%
+Epoch 017 | Train Acc: 79.89% | Val Acc: 83.95%
+Epoch 018 | Train Acc: 78.84% | Val Acc: 90.12%
+Epoch 019 | Train Acc: 84.39% | Val Acc: 91.36%
+Epoch 020 | Train Acc: 85.45% | Val Acc: 93.83%
+
+ Test Loss: 0.5001 | Test Acc: 87.65%
+
+ Training completed successfully.
+Saved:
+  • kard_bilstm_best.pt
+  • kard_bilstm_final.pt
+  • kard_bilstm_training_history.json
+  • kard_bilstm_labels.pkl
+
+===== Model Hyperparameters =====
+model_type: BiLSTM
+input_size: 45
+hidden_size: 32
+num_layers: 1
+num_classes: 18
+dropout: 0.5
+learning_rate: 0.001
+batch_size: 32
+optimizer: AdamW
+weight_decay: 0.0001
+scheduler: ReduceLROnPlateau
+epochs_trained: 20
+patience: 10
+=================================
+
+Model size: 0.09 MB
+
+Average inference time per batch: 2.090534 ms
+Average inference time per sample: 0.077427 ms
+
+===== Classification Report =====
+              precision    recall  f1-score   support
+
+    Action_0     0.4286    0.7500    0.5455         4
+    Action_1     1.0000    1.0000    1.0000         4
+    Action_2     1.0000    1.0000    1.0000         5
+    Action_3     1.0000    1.0000    1.0000         4
+    Action_4     0.7500    0.6000    0.6667         5
+    Action_5     0.5000    0.5000    0.5000         4
+    Action_6     0.5000    0.4000    0.4444         5
+    Action_7     1.0000    1.0000    1.0000         5
+    Action_8     1.0000    1.0000    1.0000         4
+    Action_9     1.0000    1.0000    1.0000         5
+   Action_10     1.0000    1.0000    1.0000         5
+   Action_11     1.0000    1.0000    1.0000         4
+   Action_12     0.8333    1.0000    0.9091         5
+   Action_13     1.0000    1.0000    1.0000         4
+   Action_14     1.0000    1.0000    1.0000         5
+   Action_15     1.0000    0.5000    0.6667         4
+   Action_16     1.0000    1.0000    1.0000         4
+   Action_17     1.0000    1.0000    1.0000         5
+
+    accuracy                         0.8765        81
+   macro avg     0.8896    0.8750    0.8740        81
+weighted avg     0.8905    0.8765    0.8759        81

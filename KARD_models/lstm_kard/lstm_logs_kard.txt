@@ -1,0 +1,85 @@
+(env) PS C:\rishit\Human-Activity-Recognition> python .\KARD_models\lstm_kard\lstm_kard.py
+Loading dataset: KARD_all_realworld.csv
+ Data shapes: 
+  X_train: (378, 310, 45) 
+  X_val: (81, 310, 45)
+  X_test: (81, 310, 45)
+Using device: cuda
+C:\Users\HP\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\nn\modules\rnn.py:123: UserWarning: dropout option adds dropout after all but last recurrent layer, so non-zero dropout expects num_layers greater than 1, but got dropout=0.55 and num_layers=1
+  warnings.warn(
+Epoch 001 | Train Acc: 6.88% | Val Acc: 17.28%
+Epoch 002 | Train Acc: 13.23% | Val Acc: 20.99%
+Epoch 003 | Train Acc: 21.43% | Val Acc: 37.04%
+Epoch 004 | Train Acc: 25.40% | Val Acc: 37.04%
+Epoch 005 | Train Acc: 28.57% | Val Acc: 41.98%
+Epoch 006 | Train Acc: 33.60% | Val Acc: 48.15%
+Epoch 007 | Train Acc: 35.19% | Val Acc: 51.85%
+Epoch 008 | Train Acc: 41.01% | Val Acc: 56.79%
+Epoch 009 | Train Acc: 42.33% | Val Acc: 64.20%
+Epoch 010 | Train Acc: 45.24% | Val Acc: 66.67%
+Epoch 011 | Train Acc: 51.06% | Val Acc: 65.43%
+Epoch 012 | Train Acc: 54.23% | Val Acc: 71.60%
+Epoch 013 | Train Acc: 57.67% | Val Acc: 74.07%
+Epoch 014 | Train Acc: 58.99% | Val Acc: 71.60%
+Epoch 015 | Train Acc: 63.23% | Val Acc: 75.31%
+Epoch 016 | Train Acc: 67.46% | Val Acc: 74.07%
+Epoch 017 | Train Acc: 61.38% | Val Acc: 80.25%
+Epoch 018 | Train Acc: 65.34% | Val Acc: 80.25%
+Epoch 019 | Train Acc: 66.67% | Val Acc: 85.19%
+Epoch 020 | Train Acc: 68.25% | Val Acc: 76.54%
+
+ Test Loss: 0.9281 | Test Acc: 77.78%
+
+ Training completed successfully.
+Saved:
+  • kard_lstm_best.pt
+  • kard_lstm_final.pt
+  • kard_lstm_training_history.json
+  • kard_lstm_labels.pkl
+
+===== Model Hyperparameters =====
+model_type: Simple LSTM
+input_size: 45
+hidden_size: 32
+num_layers: 1
+num_classes: 18
+dropout: 0.5
+learning_rate: 0.001
+batch_size: 32
+optimizer: AdamW
+weight_decay: 0.0001
+scheduler: ReduceLROnPlateau
+epochs_trained: 20
+patience: 10
+=================================
+
+Model size: 0.04 MB
+
+Average inference time per batch: 0.408967 ms
+Average inference time per sample: 0.015147 ms
+
+===== Classification Report =====
+              precision    recall  f1-score   support
+
+    Action_0     0.5000    0.2500    0.3333         4
+    Action_1     0.5000    1.0000    0.6667         4
+    Action_2     1.0000    1.0000    1.0000         5
+    Action_3     1.0000    1.0000    1.0000         4
+    Action_4     0.5000    0.2000    0.2857         5
+    Action_5     0.4286    0.7500    0.5455         4
+    Action_6     0.3333    0.2000    0.2500         5
+    Action_7     0.7143    1.0000    0.8333         5
+    Action_8     1.0000    0.7500    0.8571         4
+    Action_9     1.0000    1.0000    1.0000         5
+   Action_10     1.0000    1.0000    1.0000         5
+   Action_11     1.0000    0.7500    0.8571         4
+   Action_12     1.0000    1.0000    1.0000         5
+   Action_13     1.0000    1.0000    1.0000         4
+   Action_14     1.0000    1.0000    1.0000         5
+   Action_15     0.2500    0.2500    0.2500         4
+   Action_16     0.8000    1.0000    0.8889         4
+   Action_17     1.0000    0.8000    0.8889         5
+
+    accuracy                         0.7778        81
+   macro avg     0.7792    0.7750    0.7587        81
+weighted avg     0.7858    0.7778    0.7640        81

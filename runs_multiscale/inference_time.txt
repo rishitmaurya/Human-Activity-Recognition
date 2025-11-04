@@ -1,3 +1,0 @@
-Batch size: 64
-Batch time: 0.000000 s
-Per-sample time: 0.000000 s

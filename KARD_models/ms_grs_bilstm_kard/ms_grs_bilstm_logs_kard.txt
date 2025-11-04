@@ -5,29 +5,28 @@ Loading dataset: KARD_all_realworld.csv
   X_val: (81, 310, 45)
   X_test: (81, 310, 45)
 Using device: cuda
-Epoch 001 | Train Acc: 30.42% | Val Acc: 51.85%
-Epoch 002 | Train Acc: 52.12% | Val Acc: 67.90%
-Epoch 003 | Train Acc: 67.72% | Val Acc: 70.37%
-Epoch 004 | Train Acc: 76.98% | Val Acc: 86.42%
-Epoch 005 | Train Acc: 82.28% | Val Acc: 77.78%
-Epoch 006 | Train Acc: 82.54% | Val Acc: 83.95%
-Epoch 007 | Train Acc: 87.57% | Val Acc: 85.19%
-Epoch 008 | Train Acc: 92.33% | Val Acc: 86.42%
-Epoch 009 | Train Acc: 90.74% | Val Acc: 91.36%
-Epoch 010 | Train Acc: 93.92% | Val Acc: 90.12%
-Epoch 011 | Train Acc: 93.65% | Val Acc: 92.59%
-Epoch 012 | Train Acc: 93.12% | Val Acc: 90.12%
-Epoch 013 | Train Acc: 94.71% | Val Acc: 92.59%
-Epoch 014 | Train Acc: 95.77% | Val Acc: 95.06%
-Epoch 015 | Train Acc: 95.77% | Val Acc: 91.36%
-Epoch 016 | Train Acc: 94.71% | Val Acc: 91.36%
-Epoch 017 | Train Acc: 96.56% | Val Acc: 95.06%
-Epoch 018 | Train Acc: 96.83% | Val Acc: 93.83%
-Epoch 019 | Train Acc: 96.56% | Val Acc: 92.59%
-Epoch 020 | Train Acc: 96.56% | Val Acc: 88.89%
-Epoch 021 | Train Acc: 96.30% | Val Acc: 88.89%
+Epoch 001 | Train Acc: 32.80% | Val Acc: 55.56%
+Epoch 002 | Train Acc: 54.50% | Val Acc: 58.02%
+Epoch 003 | Train Acc: 69.05% | Val Acc: 79.01%
+Epoch 004 | Train Acc: 79.89% | Val Acc: 81.48%
+Epoch 005 | Train Acc: 83.33% | Val Acc: 76.54%
+Epoch 006 | Train Acc: 86.51% | Val Acc: 82.72%
+Epoch 007 | Train Acc: 86.51% | Val Acc: 90.12%
+Epoch 008 | Train Acc: 89.68% | Val Acc: 87.65%
+Epoch 009 | Train Acc: 92.86% | Val Acc: 86.42%
+Epoch 010 | Train Acc: 95.50% | Val Acc: 92.59%
+Epoch 011 | Train Acc: 95.77% | Val Acc: 92.59%
+Epoch 012 | Train Acc: 96.03% | Val Acc: 93.83%
+Epoch 013 | Train Acc: 95.50% | Val Acc: 90.12%
+Epoch 014 | Train Acc: 91.27% | Val Acc: 91.36%
+Epoch 015 | Train Acc: 93.92% | Val Acc: 91.36%
+Epoch 016 | Train Acc: 97.62% | Val Acc: 93.83%
+Epoch 017 | Train Acc: 98.68% | Val Acc: 92.59%
+Epoch 018 | Train Acc: 99.21% | Val Acc: 95.06%
+Epoch 019 | Train Acc: 99.74% | Val Acc: 95.06%
+Epoch 020 | Train Acc: 99.74% | Val Acc: 95.06%
 
- Test Loss: 0.1285 | Test Acc: 97.53%
+ Test Loss: 0.0573 | Test Acc: 98.77%
 
  Training completed successfully.
 Saved:
@@ -46,53 +45,37 @@ batch_size: 32
 optimizer: AdamW
 weight_decay: 0.0001
 scheduler: ReduceLROnPlateau
-epochs_trained: 21
+epochs_trained: 20
 patience: 10
 =================================
+
+Model size: 3.58 MB
+
+Average inference time per batch: 0.67 ms
+Average inference time per sample: 0.02 ms
 
 ===== Classification Report =====
               precision    recall  f1-score   support
 
-           0     1.0000    1.0000    1.0000         4
-           1     1.0000    0.7500    0.8571         4
-           2     1.0000    1.0000    1.0000         5
-           3     1.0000    1.0000    1.0000         4
-           4     1.0000    1.0000    1.0000         5
-           5     1.0000    1.0000    1.0000         4
-           6     0.8333    1.0000    0.9091         5
-           7     1.0000    1.0000    1.0000         5
-           8     1.0000    1.0000    1.0000         4
-           9     1.0000    1.0000    1.0000         5
-          10     1.0000    1.0000    1.0000         5
-          11     1.0000    1.0000    1.0000         4
-          12     1.0000    1.0000    1.0000         5
-          13     1.0000    1.0000    1.0000         4
-          14     1.0000    1.0000    1.0000         5
-          15     0.7500    0.7500    0.7500         4
-          16     1.0000    1.0000    1.0000         4
-          17     1.0000    1.0000    1.0000         5
+    Action_0     1.0000    1.0000    1.0000         4
+    Action_1     1.0000    1.0000    1.0000         4
+    Action_2     1.0000    1.0000    1.0000         5
+    Action_3     1.0000    1.0000    1.0000         4
+    Action_4     0.8333    1.0000    0.9091         5
+    Action_5     1.0000    1.0000    1.0000         4
+    Action_6     1.0000    1.0000    1.0000         5
+    Action_7     1.0000    1.0000    1.0000         5
+    Action_8     1.0000    1.0000    1.0000         4
+    Action_9     1.0000    1.0000    1.0000         5
+   Action_10     1.0000    1.0000    1.0000         5
+   Action_11     1.0000    1.0000    1.0000         4
+   Action_12     1.0000    1.0000    1.0000         5
+   Action_13     1.0000    1.0000    1.0000         4
+   Action_14     1.0000    1.0000    1.0000         5
+   Action_15     1.0000    0.7500    0.8571         4
+   Action_16     1.0000    1.0000    1.0000         4
+   Action_17     1.0000    1.0000    1.0000         5
 
-    accuracy                         0.9753        81
-   macro avg     0.9769    0.9722    0.9731        81
-weighted avg     0.9774    0.9753    0.9750        81
-
-
-===== Confusion Matrix =====
-[[4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
- [0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0]
- [0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
- [0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
- [0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0]
- [0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0]
- [0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0]
- [0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0]
- [0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0]
- [0 0 0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0]
- [0 0 0 0 0 0 0 0 0 0 5 0 0 0 0 0 0 0]
- [0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0]
- [0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0 0 0]
- [0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0]
- [0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0]
- [0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 3 0 0]
- [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0]
- [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5]]
+    accuracy                         0.9877        81
+   macro avg     0.9907    0.9861    0.9870        81
+weighted avg     0.9897    0.9877    0.9873        81

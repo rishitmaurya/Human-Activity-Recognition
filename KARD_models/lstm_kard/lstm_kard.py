@@ -1,4 +1,4 @@
-# --- train_kard_ms_bilstm.py ---
+# --- train_kard_lstm.py ---
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -7,7 +7,10 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
-import json, pickle
+import json, pickle, os, time
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import classification_report, confusion_matrix
 
 # =====================================================
 #  Load and preprocess dataset
@@ -16,10 +19,8 @@ csv_path = "KARD_all_realworld.csv"
 print(f"Loading dataset: {csv_path}")
 df = pd.read_csv(csv_path)
 
-# Sort for consistency
+# Sort and pivot
 df = df.sort_values(["action_id", "subject_id", "repetition", "frame", "joint_name"])
-
-# Pivot each frame into one row of 45 (15 joints × 3 coords)
 pivoted = (
     df.pivot_table(
         index=["action_id", "subject_id", "repetition", "frame"],
@@ -30,7 +31,7 @@ pivoted = (
 )
 pivoted.columns = ["_".join(col).strip("_") for col in pivoted.columns.values]
 
-# Group by each sequence
+# Group each sequence
 seqs, labels = [], []
 for (a, s, r), group in pivoted.groupby(["action_id", "subject_id", "repetition"]):
     feat_cols = [c for c in group.columns if c not in ["action_id", "subject_id", "repetition", "frame"]]
@@ -49,10 +50,9 @@ y = np.array(labels)
 
 # Normalize
 scaler = StandardScaler()
-X_reshaped = X.reshape(-1, feature_dim)
-X_scaled = scaler.fit_transform(X_reshaped).reshape(X.shape)
+X_scaled = scaler.fit_transform(X.reshape(-1, feature_dim)).reshape(X.shape)
 
-# Split
+# Split dataset
 X_train, X_temp, y_train, y_temp = train_test_split(
     X_scaled, y, test_size=0.3, stratify=y, random_state=42
 )
@@ -66,32 +66,23 @@ print(" Data shapes:",
       "\n  X_test:", X_test.shape)
 
 # =====================================================
-#  Model Definition
+#  Simple LSTM Model Definition
 # =====================================================
-class MultiScaleResBiLSTM(nn.Module):
-    def __init__(self, input_size, hidden_size=128, num_classes=18, dropout=0.3):
+class SimpleLSTMClassifier(nn.Module):
+    def __init__(self, input_size, hidden_size=32, num_layers=1, num_classes=18, dropout=0.55):
         super().__init__()
-        self.scale1 = nn.LSTM(input_size, hidden_size, batch_first=True, bidirectional=True)
-        self.scale2 = nn.LSTM(input_size, hidden_size, batch_first=True, bidirectional=True)
-        self.scale3 = nn.LSTM(input_size, hidden_size, batch_first=True, bidirectional=True)
-        self.reduce = nn.Linear(hidden_size * 6, hidden_size * 2)   #  projection for skip add
-        self.res_fc = nn.Linear(hidden_size * 6, hidden_size * 2)
-        self.norm = nn.LayerNorm(hidden_size * 2)
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers=num_layers,
+                            batch_first=True, bidirectional=False, dropout=dropout)
         self.dropout = nn.Dropout(dropout)
-        self.classifier = nn.Linear(hidden_size * 2, num_classes)
+        self.fc = nn.Linear(hidden_size, num_classes)
+        self.norm = nn.LayerNorm(hidden_size)
 
     def forward(self, x):
-        x1, _ = self.scale1(x)
-        x2, _ = self.scale2(x[:, ::2, :])
-        x3, _ = self.scale3(x[:, ::4, :])
-        x1, x2, x3 = x1.mean(dim=1), x2.mean(dim=1), x3.mean(dim=1)
-        cat = torch.cat([x1, x2, x3], dim=-1)
-        cat_proj = self.reduce(cat)
-        res = torch.relu(self.res_fc(cat))
-        out = self.norm(cat_proj + res)
+        out, _ = self.lstm(x)
+        out = out.mean(dim=1)          # Global temporal average pooling
+        out = self.norm(out)
         out = self.dropout(out)
-        return self.classifier(out)
-
+        return self.fc(out)
 
 # =====================================================
 #  Prepare DataLoaders
@@ -113,7 +104,7 @@ test_loader = DataLoader(TensorDataset(torch.tensor(X_test, dtype=torch.float32)
 # =====================================================
 #  Train the Model
 # =====================================================
-model = MultiScaleResBiLSTM(input_size=input_size).to(device)
+model = SimpleLSTMClassifier(input_size=input_size).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
 scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, "min", patience=3, factor=0.5)
@@ -158,7 +149,7 @@ for epoch in range(20):
 
     if val_acc > best_acc:
         best_acc = val_acc
-        torch.save(model.state_dict(), "kard_ms_bilstm_best.pt")
+        torch.save(model.state_dict(), "kard_lstm_best.pt")
         counter = 0
     else:
         counter += 1
@@ -169,7 +160,7 @@ for epoch in range(20):
 # =====================================================
 #  Final Test Evaluation
 # =====================================================
-model.load_state_dict(torch.load("kard_ms_bilstm_best.pt"))
+model.load_state_dict(torch.load("kard_lstm_best.pt"))
 model.eval()
 correct, total, test_loss = 0, 0, 0
 with torch.no_grad():
@@ -185,44 +176,36 @@ print(f"\n Test Loss: {test_loss/len(test_loader):.4f} | Test Acc: {test_acc*100
 # =====================================================
 #  Save Outputs
 # =====================================================
-torch.save(model.state_dict(), "kard_ms_bilstm_final.pt")
-with open("kard_training_history.json", "w") as f:
+torch.save(model.state_dict(), "kard_lstm_final.pt")
+with open("kard_lstm_training_history.json", "w") as f:
     json.dump(history, f)
-pickle.dump({"labels": np.unique(y_train)}, open("kard_labels.pkl", "wb"))
+pickle.dump({"labels": np.unique(y_train)}, open("kard_lstm_labels.pkl", "wb"))
 
 print("\n Training completed successfully.")
 print("Saved:")
-print("  • kard_ms_bilstm_best.pt")
-print("  • kard_ms_bilstm_final.pt")
-print("  • kard_training_history.json")
-print("  • kard_labels.pkl")
+print("  • kard_lstm_best.pt")
+print("  • kard_lstm_final.pt")
+print("  • kard_lstm_training_history.json")
+print("  • kard_lstm_labels.pkl")
 
 # =====================================================
-#  Evaluate Model: Metrics, Plots, Timing, Model Size
+#  Evaluation, Curves, Inference Time, Model Size
 # =====================================================
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.metrics import classification_report, confusion_matrix
-import torch
-import time
-import json
-import pickle
-import os
-import numpy as np
-
-# ------------------ Load History & Labels ------------------
-with open("kard_training_history.json", "r") as f:
+# Load history and labels
+with open("kard_lstm_training_history.json", "r") as f:
     history = json.load(f)
-with open("kard_labels.pkl", "rb") as f:
+with open("kard_lstm_labels.pkl", "rb") as f:
     label_data = pickle.load(f)
 class_names = [f"Action_{int(l)}" for l in label_data["labels"]]
 
-# ------------------ Hyperparameters ------------------
+# Hyperparameters
 hyperparams = {
+    "model_type": "Simple LSTM",
     "input_size": input_size,
-    "hidden_size": 128,
+    "hidden_size": 32,
+    "num_layers": 1,
     "num_classes": 18,
-    "dropout": 0.3,
+    "dropout": 0.5,
     "learning_rate": 1e-3,
     "batch_size": 32,
     "optimizer": "AdamW",
@@ -236,15 +219,11 @@ for k, v in hyperparams.items():
     print(f"{k}: {v}")
 print("=================================\n")
 
-# ------------------ Load Best Model ------------------
-model.load_state_dict(torch.load("kard_ms_bilstm_best.pt", map_location=device))
-model.eval()
-
-# ------------------ Model Size ------------------
-model_size = os.path.getsize("kard_ms_bilstm_best.pt") / (1024 ** 2)
+# Model size
+model_size = os.path.getsize("kard_lstm_best.pt") / (1024 ** 2)
 print(f"Model size: {model_size:.2f} MB")
 
-# ------------------ Inference Timing ------------------
+# Inference time
 batch_times, sample_times = [], []
 with torch.no_grad():
     for xb, yb in test_loader:
@@ -256,10 +235,10 @@ with torch.no_grad():
         sample_times.extend([(end - start) / xb.size(0)] * xb.size(0))
 avg_batch_time = np.mean(batch_times)
 avg_sample_time = np.mean(sample_times)
-print(f"\nAverage inference time per batch: {avg_batch_time*1000:.2f} ms")
-print(f"Average inference time per sample: {avg_sample_time*1000:.2f} ms")
+print(f"\nAverage inference time per batch: {avg_batch_time*1000:.6f} ms")
+print(f"Average inference time per sample: {avg_sample_time*1000:.6f} ms")
 
-# ------------------ Evaluation ------------------
+# Predictions
 all_preds, all_labels = [], []
 with torch.no_grad():
     for xb, yb in test_loader:
@@ -268,33 +247,32 @@ with torch.no_grad():
         all_preds.extend(preds.argmax(1).cpu().numpy())
         all_labels.extend(yb.cpu().numpy())
 
-# ------------------ Classification Report ------------------
+# Classification report
 print("\n===== Classification Report =====")
 print(classification_report(all_labels, all_preds, target_names=class_names, digits=4))
 
-# ------------------ Confusion Matrix ------------------
+# Confusion Matrix
 cm = confusion_matrix(all_labels, all_preds)
 plt.figure(figsize=(10, 8))
 sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
             xticklabels=class_names, yticklabels=class_names)
-plt.title("Confusion Matrix - KARD Multi-Scale Residual BiLSTM")
+plt.title("Confusion Matrix - KARD LSTM")
 plt.xlabel("Predicted")
 plt.ylabel("True")
 plt.tight_layout()
 plt.show()
 
-# ------------------ Accuracy & Loss Curves ------------------
+# Accuracy & Loss curves
 epochs = range(1, len(history["train_acc"]) + 1)
 plt.figure(figsize=(10, 6))
 plt.plot(epochs, history["train_acc"], label="Train Accuracy", linewidth=2)
 plt.plot(epochs, history["val_acc"], label="Val Accuracy", linewidth=2)
 plt.plot(epochs, history["train_loss"], '--', label="Train Loss", linewidth=2)
 plt.plot(epochs, history["val_loss"], '--', label="Val Loss", linewidth=2)
-plt.title("Accuracy & Loss Curves")
+plt.title("Accuracy & Loss Curves - Simple LSTM")
 plt.xlabel("Epoch")
 plt.ylabel("Value")
 plt.legend()
 plt.grid(True, linestyle="--", alpha=0.6)
 plt.tight_layout()
 plt.show()
-

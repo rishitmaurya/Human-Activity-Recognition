@@ -1,0 +1,98 @@
+(env) PS C:\rishit\Human-Activity-Recognition> python .\KARD_models\ms_grs_bilstm_kard\ms_grs_bilstm_kard.py
+Loading dataset: KARD_all_realworld.csv
+ Data shapes: 
+  X_train: (378, 310, 45) 
+  X_val: (81, 310, 45)
+  X_test: (81, 310, 45)
+Using device: cuda
+Epoch 001 | Train Acc: 30.42% | Val Acc: 51.85%
+Epoch 002 | Train Acc: 52.12% | Val Acc: 67.90%
+Epoch 003 | Train Acc: 67.72% | Val Acc: 70.37%
+Epoch 004 | Train Acc: 76.98% | Val Acc: 86.42%
+Epoch 005 | Train Acc: 82.28% | Val Acc: 77.78%
+Epoch 006 | Train Acc: 82.54% | Val Acc: 83.95%
+Epoch 007 | Train Acc: 87.57% | Val Acc: 85.19%
+Epoch 008 | Train Acc: 92.33% | Val Acc: 86.42%
+Epoch 009 | Train Acc: 90.74% | Val Acc: 91.36%
+Epoch 010 | Train Acc: 93.92% | Val Acc: 90.12%
+Epoch 011 | Train Acc: 93.65% | Val Acc: 92.59%
+Epoch 012 | Train Acc: 93.12% | Val Acc: 90.12%
+Epoch 013 | Train Acc: 94.71% | Val Acc: 92.59%
+Epoch 014 | Train Acc: 95.77% | Val Acc: 95.06%
+Epoch 015 | Train Acc: 95.77% | Val Acc: 91.36%
+Epoch 016 | Train Acc: 94.71% | Val Acc: 91.36%
+Epoch 017 | Train Acc: 96.56% | Val Acc: 95.06%
+Epoch 018 | Train Acc: 96.83% | Val Acc: 93.83%
+Epoch 019 | Train Acc: 96.56% | Val Acc: 92.59%
+Epoch 020 | Train Acc: 96.56% | Val Acc: 88.89%
+Epoch 021 | Train Acc: 96.30% | Val Acc: 88.89%
+
+ Test Loss: 0.1285 | Test Acc: 97.53%
+
+ Training completed successfully.
+Saved:
+  • kard_ms_bilstm_best.pt
+  • kard_ms_bilstm_final.pt
+  • kard_training_history.json
+  • kard_labels.pkl
+
+===== Model Hyperparameters =====
+input_size: 45
+hidden_size: 128
+num_classes: 18
+dropout: 0.3
+learning_rate: 0.001
+batch_size: 32
+optimizer: AdamW
+weight_decay: 0.0001
+scheduler: ReduceLROnPlateau
+epochs_trained: 21
+patience: 10
+=================================
+
+===== Classification Report =====
+              precision    recall  f1-score   support
+
+           0     1.0000    1.0000    1.0000         4
+           1     1.0000    0.7500    0.8571         4
+           2     1.0000    1.0000    1.0000         5
+           3     1.0000    1.0000    1.0000         4
+           4     1.0000    1.0000    1.0000         5
+           5     1.0000    1.0000    1.0000         4
+           6     0.8333    1.0000    0.9091         5
+           7     1.0000    1.0000    1.0000         5
+           8     1.0000    1.0000    1.0000         4
+           9     1.0000    1.0000    1.0000         5
+          10     1.0000    1.0000    1.0000         5
+          11     1.0000    1.0000    1.0000         4
+          12     1.0000    1.0000    1.0000         5
+          13     1.0000    1.0000    1.0000         4
+          14     1.0000    1.0000    1.0000         5
+          15     0.7500    0.7500    0.7500         4
+          16     1.0000    1.0000    1.0000         4
+          17     1.0000    1.0000    1.0000         5
+
+    accuracy                         0.9753        81
+   macro avg     0.9769    0.9722    0.9731        81
+weighted avg     0.9774    0.9753    0.9750        81
+
+
+===== Confusion Matrix =====
+[[4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0]
+ [0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 5 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0]
+ [0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 3 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5]]

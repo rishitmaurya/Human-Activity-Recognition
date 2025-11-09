@@ -46,28 +46,29 @@ plt.close()
 print("All analysis plots saved to:", output_dir)
 
 
+# ================= Improved Vertical Stacked Bar Chart ==================
+person_activity_counts = df.groupby(["Person", "Activity"]).size().unstack(fill_value=0)
 
+fig, ax = plt.subplots(figsize=(10, 6))   # wider figure
+colors = plt.cm.tab20.colors[:len(person_activity_counts.columns)]
 
-# Create count matrix (Activity × Person)
-count_matrix = pd.crosstab(df["Activity"], df["Person"])
+person_activity_counts.plot(kind="bar", stacked=True, edgecolor="black", color=colors, ax=ax)
 
-# Convert to array
-data = count_matrix.values
+ax.set_xlabel("Person", fontsize=14)
+ax.set_ylabel("Number of Samples", fontsize=14)
+ax.set_title("Stacked Bar Chart: Person vs Activity Distribution", fontsize=16, fontweight='bold')
 
-plt.figure(figsize=(10, 6))
-plt.imshow(data, aspect="auto")
-plt.colorbar(label="Number of Samples")
+ax.set_xticklabels(ax.get_xticklabels(), rotation=60, ha='right', fontsize=12)  # rotate and right-align
+ax.grid(axis='y', linestyle='--', linewidth=0.4)
 
-# X and Y ticks
-plt.xticks(np.arange(len(count_matrix.columns)), count_matrix.columns, rotation=45)
-plt.yticks(np.arange(len(count_matrix.index)), count_matrix.index)
+# Legend outside
+ax.legend(title="Activity", bbox_to_anchor=(1, 1), loc='upper left')
 
-plt.xlabel("Person")
-plt.ylabel("Activity")
-plt.title("Heatmap of Person vs Activity Sample Distribution")
-
+plt.subplots_adjust(bottom=0.25)   # add extra space below labels
 plt.tight_layout()
-plt.savefig(f"{output_dir}/person_activity_heatmap.png")
+plt.savefig(f"{output_dir}/person_activity_stacked_bar_colored.png", bbox_inches="tight")
 plt.close()
 
-print("Saved:", f"{output_dir}/person_activity_heatmap.png")
+print("Updated stacked bar chart saved.")
+
+

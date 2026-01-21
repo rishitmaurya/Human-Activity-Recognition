@@ -1,0 +1,75 @@
+(env) PS C:\programming\Human-Activity-Recognitions> python .\wearable_sensors\bilstm_wear\bilstm_wear.py
+Using device: cuda
+Step 1: Engineering Features and Magnitudes...
+Epoch 1/50 | Acc: 0.2410 | Loss: 1.7856 | Val Acc: 0.3548 |Val Loss: 1.5163 
+Epoch 2/50 | Acc: 0.3602 | Loss: 1.4346 | Val Acc: 0.3825 |Val Loss: 1.3336 
+Epoch 3/50 | Acc: 0.4038 | Loss: 1.2873 | Val Acc: 0.4656 |Val Loss: 1.1380 
+Epoch 4/50 | Acc: 0.4394 | Loss: 1.1773 | Val Acc: 0.4431 |Val Loss: 1.2513 
+Epoch 5/50 | Acc: 0.4802 | Loss: 1.0891 | Val Acc: 0.5090 |Val Loss: 0.9996 
+Epoch 6/50 | Acc: 0.4985 | Loss: 1.0335 | Val Acc: 0.4933 |Val Loss: 1.0137 
+Epoch 7/50 | Acc: 0.5180 | Loss: 0.9826 | Val Acc: 0.5442 |Val Loss: 0.9270 
+Epoch 8/50 | Acc: 0.5238 | Loss: 0.9619 | Val Acc: 0.5127 |Val Loss: 0.9320 
+Epoch 9/50 | Acc: 0.5236 | Loss: 0.9232 | Val Acc: 0.5734 |Val Loss: 0.8658 
+Epoch 10/50 | Acc: 0.5376 | Loss: 0.9312 | Val Acc: 0.5763 |Val Loss: 0.8669 
+Epoch 11/50 | Acc: 0.5505 | Loss: 0.9164 | Val Acc: 0.5846 |Val Loss: 0.8598 
+Epoch 12/50 | Acc: 0.5677 | Loss: 0.8660 | Val Acc: 0.6018 |Val Loss: 0.8008 
+Epoch 13/50 | Acc: 0.5765 | Loss: 0.8341 | Val Acc: 0.5808 |Val Loss: 0.8472 
+Epoch 14/50 | Acc: 0.6022 | Loss: 0.8070 | Val Acc: 0.6183 |Val Loss: 0.7793 
+Epoch 15/50 | Acc: 0.6156 | Loss: 0.7828 | Val Acc: 0.6632 |Val Loss: 0.7104 
+Epoch 16/50 | Acc: 0.6286 | Loss: 0.7603 | Val Acc: 0.6235 |Val Loss: 0.7942 
+Epoch 17/50 | Acc: 0.6280 | Loss: 0.7604 | Val Acc: 0.7066 |Val Loss: 0.6741 
+Epoch 18/50 | Acc: 0.6748 | Loss: 0.7046 | Val Acc: 0.7201 |Val Loss: 0.6305 
+Epoch 19/50 | Acc: 0.6763 | Loss: 0.6879 | Val Acc: 0.6789 |Val Loss: 0.6690 
+Epoch 20/50 | Acc: 0.6897 | Loss: 0.6765 | Val Acc: 0.7156 |Val Loss: 0.6681 
+Epoch 21/50 | Acc: 0.6912 | Loss: 0.6739 | Val Acc: 0.7043 |Val Loss: 0.6350 
+Epoch 22/50 | Acc: 0.6869 | Loss: 0.6780 | Val Acc: 0.7275 |Val Loss: 0.5973 
+Epoch 23/50 | Acc: 0.7206 | Loss: 0.6176 | Val Acc: 0.7298 |Val Loss: 0.5539 
+Epoch 24/50 | Acc: 0.7195 | Loss: 0.6196 | Val Acc: 0.7672 |Val Loss: 0.5379 
+Epoch 25/50 | Acc: 0.7384 | Loss: 0.6078 | Val Acc: 0.7440 |Val Loss: 0.5881 
+Epoch 26/50 | Acc: 0.7463 | Loss: 0.5880 | Val Acc: 0.7957 |Val Loss: 0.4948 
+Epoch 27/50 | Acc: 0.7577 | Loss: 0.5637 | Val Acc: 0.7912 |Val Loss: 0.5022 
+Epoch 28/50 | Acc: 0.7638 | Loss: 0.5390 | Val Acc: 0.7822 |Val Loss: 0.5124 
+Epoch 29/50 | Acc: 0.7487 | Loss: 0.5714 | Val Acc: 0.7897 |Val Loss: 0.4773 
+Epoch 30/50 | Acc: 0.7839 | Loss: 0.5275 | Val Acc: 0.7537 |Val Loss: 0.5081 
+Epoch 31/50 | Acc: 0.7839 | Loss: 0.5143 | Val Acc: 0.7994 |Val Loss: 0.4398 
+Epoch 32/50 | Acc: 0.7917 | Loss: 0.4972 | Val Acc: 0.8166 |Val Loss: 0.4028 
+Epoch 33/50 | Acc: 0.7865 | Loss: 0.4899 | Val Acc: 0.8069 |Val Loss: 0.4177 
+Epoch 34/50 | Acc: 0.7951 | Loss: 0.4699 | Val Acc: 0.8061 |Val Loss: 0.4130 
+Epoch 35/50 | Acc: 0.8026 | Loss: 0.4504 | Val Acc: 0.7829 |Val Loss: 0.4628 
+Epoch 36/50 | Acc: 0.7695 | Loss: 0.5402 | Val Acc: 0.8114 |Val Loss: 0.4279 
+Epoch 37/50 | Acc: 0.8058 | Loss: 0.4612 | Val Acc: 0.8091 |Val Loss: 0.4282 
+Epoch 38/50 | Acc: 0.8054 | Loss: 0.4447 | Val Acc: 0.8009 |Val Loss: 0.4064 
+Epoch 39/50 | Acc: 0.8061 | Loss: 0.4451 | Val Acc: 0.8249 |Val Loss: 0.3656 
+Epoch 40/50 | Acc: 0.8144 | Loss: 0.4184 | Val Acc: 0.8263 |Val Loss: 0.3606 
+Epoch 41/50 | Acc: 0.8016 | Loss: 0.4803 | Val Acc: 0.8204 |Val Loss: 0.3684 
+Epoch 42/50 | Acc: 0.8157 | Loss: 0.4110 | Val Acc: 0.8106 |Val Loss: 0.3866 
+Epoch 43/50 | Acc: 0.8185 | Loss: 0.4163 | Val Acc: 0.8278 |Val Loss: 0.3645 
+Epoch 44/50 | Acc: 0.7736 | Loss: 0.5583 | Val Acc: 0.7814 |Val Loss: 0.4685 
+Epoch 45/50 | Acc: 0.8022 | Loss: 0.4686 | Val Acc: 0.8069 |Val Loss: 0.4105 
+Epoch 46/50 | Acc: 0.8106 | Loss: 0.4146 | Val Acc: 0.8278 |Val Loss: 0.3591 
+Epoch 47/50 | Acc: 0.8118 | Loss: 0.4168 | Val Acc: 0.8181 |Val Loss: 0.3620 
+Epoch 48/50 | Acc: 0.8190 | Loss: 0.4125 | Val Acc: 0.8308 |Val Loss: 0.3610 
+Epoch 49/50 | Acc: 0.8275 | Loss: 0.3866 | Val Acc: 0.8271 |Val Loss: 0.3519 
+Epoch 50/50 | Acc: 0.8256 | Loss: 0.3798 | Val Acc: 0.8069 |Val Loss: 0.3746 
+
+Classification Report:
+              precision    recall  f1-score   support
+
+     bending   0.854749  0.761194  0.805263       201
+     jumping   0.747619  0.826316  0.785000       190
+     running   0.797619  0.724324  0.759207       185
+     sitting   0.975610  0.628272  0.764331       191
+       squat   0.971591  0.900000  0.934426       190
+    standing   0.675472  0.952128  0.790287       188
+     walking   0.762791  0.858639  0.807882       191
+
+    accuracy                       0.806886      1336
+   macro avg   0.826493  0.807268  0.806628      1336
+weighted avg   0.827124  0.806886  0.806788      1336
+
+Model Parameters: 32,775
+Model Size: 0.1250 MB
+Avg Batch Inference Time: 0.008822 sec
+Single Sample Inference Time: 0.004555 sec
+
+All models, scalers, and labels saved.

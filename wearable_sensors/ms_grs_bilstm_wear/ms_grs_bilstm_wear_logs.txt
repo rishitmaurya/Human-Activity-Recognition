@@ -1,0 +1,92 @@
+(env) PS C:\programming\Human-Activity-Recognitions> python .\wearable_sensors\ms_grs_bilstm_wear\testing\test.py
+Using device: cuda
+Step 1: Engineering Features and Magnitudes...
+Epoch 1/50 | Acc: 0.4034 | Val Acc: 0.6085
+Epoch 2/50 | Acc: 0.6033 | Val Acc: 0.6819
+Epoch 3/50 | Acc: 0.7051 | Val Acc: 0.7657
+Epoch 4/50 | Acc: 0.7410 | Val Acc: 0.7784
+Epoch 5/50 | Acc: 0.7577 | Val Acc: 0.7088
+Epoch 6/50 | Acc: 0.7794 | Val Acc: 0.8069
+Epoch 7/50 | Acc: 0.7844 | Val Acc: 0.7927
+Epoch 8/50 | Acc: 0.7992 | Val Acc: 0.7784
+Epoch 9/50 | Acc: 0.8076 | Val Acc: 0.7957
+Epoch 10/50 | Acc: 0.8132 | Val Acc: 0.8278
+Epoch 11/50 | Acc: 0.8269 | Val Acc: 0.8458
+Epoch 12/50 | Acc: 0.8452 | Val Acc: 0.8458
+Epoch 13/50 | Acc: 0.8456 | Val Acc: 0.8016
+Epoch 14/50 | Acc: 0.8372 | Val Acc: 0.8540
+Epoch 15/50 | Acc: 0.8583 | Val Acc: 0.8189
+Epoch 16/50 | Acc: 0.8640 | Val Acc: 0.8690
+Epoch 17/50 | Acc: 0.8737 | Val Acc: 0.8705
+Epoch 18/50 | Acc: 0.8750 | Val Acc: 0.8780
+Epoch 19/50 | Acc: 0.8737 | Val Acc: 0.8645
+Epoch 20/50 | Acc: 0.8838 | Val Acc: 0.8683
+Epoch 21/50 | Acc: 0.8872 | Val Acc: 0.8540
+Epoch 22/50 | Acc: 0.8986 | Val Acc: 0.8735
+Epoch 23/50 | Acc: 0.8913 | Val Acc: 0.8825
+Epoch 24/50 | Acc: 0.9016 | Val Acc: 0.8772
+Epoch 25/50 | Acc: 0.9092 | Val Acc: 0.8862
+Epoch 26/50 | Acc: 0.8750 | Val Acc: 0.8743
+Epoch 27/50 | Acc: 0.9004 | Val Acc: 0.8907
+Epoch 28/50 | Acc: 0.8860 | Val Acc: 0.8855
+Epoch 29/50 | Acc: 0.8894 | Val Acc: 0.8892
+Epoch 30/50 | Acc: 0.9051 | Val Acc: 0.8930
+Epoch 31/50 | Acc: 0.9208 | Val Acc: 0.9049
+Epoch 32/50 | Acc: 0.9212 | Val Acc: 0.9042
+Epoch 33/50 | Acc: 0.9315 | Val Acc: 0.9124
+Epoch 34/50 | Acc: 0.9306 | Val Acc: 0.9027
+Epoch 35/50 | Acc: 0.9354 | Val Acc: 0.9109
+Epoch 36/50 | Acc: 0.9437 | Val Acc: 0.9207
+Epoch 37/50 | Acc: 0.9440 | Val Acc: 0.9251
+Epoch 38/50 | Acc: 0.9356 | Val Acc: 0.9199
+Epoch 39/50 | Acc: 0.9489 | Val Acc: 0.9237
+Epoch 40/50 | Acc: 0.9568 | Val Acc: 0.9296
+Epoch 41/50 | Acc: 0.9472 | Val Acc: 0.9019
+Epoch 42/50 | Acc: 0.9388 | Val Acc: 0.9177
+Epoch 43/50 | Acc: 0.9540 | Val Acc: 0.9296
+Epoch 44/50 | Acc: 0.9538 | Val Acc: 0.9251
+Epoch 45/50 | Acc: 0.9562 | Val Acc: 0.9229
+Epoch 46/50 | Acc: 0.9571 | Val Acc: 0.9431
+Epoch 47/50 | Acc: 0.9697 | Val Acc: 0.9409
+Epoch 48/50 | Acc: 0.9667 | Val Acc: 0.9386
+Epoch 49/50 | Acc: 0.9708 | Val Acc: 0.9499
+Epoch 50/50 | Acc: 0.9701 | Val Acc: 0.9513
+
+Hyperparameters :
+    "epochs": 50,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "window_size": 128,
+    "step_size": 32,
+    "optimizer": "Adam",
+    "loss": "CrossEntropyLoss",
+    "dropout": 0.4,
+
+Test Loss : 0.077365
+
+Classification Report:
+              precision    recall  f1-score   support
+
+     bending       0.96      0.91      0.93       201
+     jumping       0.97      0.96      0.97       190
+     running       0.96      0.97      0.97       185
+     sitting       0.90      0.97      0.94       191
+       squat       1.00      0.96      0.98       190
+    standing       0.98      0.92      0.95       188
+     walking       0.89      0.97      0.93       191
+
+    accuracy                           0.95      1336
+   macro avg       0.95      0.95      0.95      1336
+    accuracy                           0.95      1336
+   macro avg       0.95      0.95      0.95      1336
+   macro avg       0.95      0.95      0.95      1336
+weighted avg       0.95      0.95      0.95      1336
+
+Model Parameters: 559,176
+Model Size: 2.13 MB
+Avg Batch Inference Time: 0.017672 sec
+Single Sample Inference Time: 0.009988 sec
+
+All models, scalers, and labels saved.
+
+

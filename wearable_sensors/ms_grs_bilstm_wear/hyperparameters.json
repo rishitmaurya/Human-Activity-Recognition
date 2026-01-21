@@ -1,0 +1,11 @@
+{
+    "epochs": 50,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "window_size": 128,
+    "step_size": 32,
+    "optimizer": "Adam",
+    "loss": "CrossEntropyLoss",
+    "dropout": 0.4,
+    "model": "MS-GRS-BiLSTM + Attention"
+}

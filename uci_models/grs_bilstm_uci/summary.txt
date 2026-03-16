@@ -1,0 +1,76 @@
+
+======================================================================
+SUMMARY - GRS-BiLSTM on UCI HAR
+======================================================================
+Model: GRS-BiLSTM
+Dataset: UCI Human Activity Recognition
+Features Used: 561 features (ALL)
+Sequence Length: 3
+Features per Step: 561
+Number of Classes: 6
+Class Names: ['WALKING', 'WALKING_UPSTAIRS', 'WALKING_DOWNSTAIRS', 'SITTING', 'STANDING', 'LAYING']
+
+MODEL SPECIFICATIONS:
+---------------------
+Total Parameters: 138,221
+Trainable Parameters: 138,221
+Model Size: 1,735,588 bytes (1694.91 KB, 1.6552 MB)
+Hidden Size: 64
+Number of Layers: 1
+Dropout: 0.5
+
+REGULARIZATION TECHNIQUES:
+--------------------------
+- Mixup Augmentation (alpha=0.1)
+- Label Smoothing Cross Entropy (smoothing=0.05)
+- Weight Decay: 0.0008
+- Feature Noise Std: 0.01
+- Auxiliary Classifier Loss
+- Multiple Dropout layers
+
+TRAINING CONFIGURATION:
+-----------------------
+Learning Rate: 0.001
+Batch Size: 64
+Optimizer: AdamW
+Weight Decay: 0.0008
+Scheduler: OneCycleLR
+Epochs Trained: 50
+Training Time: 71.18 seconds
+
+DATA SPLIT:
+-----------
+Training Samples: 6984
+Validation Samples: 368
+Test Samples: 2947
+
+PERFORMANCE METRICS:
+--------------------
+Best Validation Accuracy: 99.46%
+Best Validation Loss: 0.4367
+Best Test Accuracy: 95.05%
+Final Test Accuracy: 95.11%
+Macro F1-Score: 0.9508
+Weighted F1-Score: 0.9510
+Macro Precision: 0.9533
+Macro Recall: 0.9500
+Cohen's Kappa: 0.9413
+Matthews Correlation Coefficient: 0.9416
+
+INFERENCE SPEED:
+----------------
+Avg Batch Time: 2.91 ms
+Avg Sample Time: 0.0455 ms
+Throughput: 21985 samples/sec
+
+PER-CLASS ACCURACY:
+-------------------
+  WALKING: 96.57%
+  WALKING_UPSTAIRS: 94.48%
+  WALKING_DOWNSTAIRS: 95.00%
+  SITTING: 86.56%
+  STANDING: 97.37%
+  LAYING: 100.00%
+
+VISUALIZATIONS GENERATED: 21
+======================================================================

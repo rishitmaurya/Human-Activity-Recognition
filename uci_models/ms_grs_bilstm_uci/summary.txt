@@ -1,0 +1,76 @@
+
+======================================================================
+SUMMARY - Robust MS-GRS-BiLSTM with Mixup
+======================================================================
+Model: MSGRSBiLSTM_V4
+Dataset: UCI Human Activity Recognition
+Features Used: 561 features (ALL)
+Sequence Length: 3
+Features per Step: 561
+Number of Classes: 6
+Class Names: ['WALKING', 'WALKING_UPSTAIRS', 'WALKING_DOWNSTAIRS', 'SITTING', 'STANDING', 'LAYING']
+
+MODEL SPECIFICATIONS:
+---------------------
+Total Parameters: 1,342,109
+Trainable Parameters: 1,342,109
+Model Size: 16,196,271 bytes (15816.67 KB, 15.4460 MB)
+Hidden Size: 224
+Number of Layers: 2
+Dropout: 0.2
+Scales: [3, 5, 7]
+
+REGULARIZATION TECHNIQUES:
+--------------------------
+- Mixup Augmentation (alpha=0.1)
+- Label Smoothing Cross Entropy (smoothing=0.05)
+- Weight Decay: 0.0008
+- Spatial Dropout: 0.2
+- Multiple Dropout layers: 0.2-0.30000000000000004
+
+TRAINING CONFIGURATION:
+-----------------------
+Learning Rate: 0.0008
+Batch Size: 64
+Optimizer: AdamW
+Weight Decay: 0.0008
+Scheduler: OneCycleLR
+Epochs Trained: 50
+Training Time: 72.31 seconds
+Feature Noise Std: 0.015
+Best Validation Loss: 0.4314
+
+DATA SPLIT:
+-----------
+Training Samples: 6984
+Validation Samples: 368
+Test Samples: 2947
+
+PERFORMANCE METRICS:
+--------------------
+Best Test Accuracy: 95.42%
+Final Test Accuracy: 95.76%
+Macro F1-Score: 0.9576
+Weighted F1-Score: 0.9575
+Macro Precision: 0.9585
+Macro Recall: 0.9570
+Cohen's Kappa: 0.9490
+Matthews Correlation Coefficient: 0.9491
+
+INFERENCE SPEED:
+----------------
+Avg Batch Time: 2.10 ms
+Avg Sample Time: 0.0328 ms
+Throughput: 30463 samples/sec
+
+PER-CLASS ACCURACY:
+-------------------
+  WALKING: 98.19%
+  WALKING_UPSTAIRS: 95.54%
+  WALKING_DOWNSTAIRS: 95.95%
+  SITTING: 89.61%
+  STANDING: 94.92%
+  LAYING: 100.00%
+
+VISUALIZATIONS GENERATED: 21
+======================================================================

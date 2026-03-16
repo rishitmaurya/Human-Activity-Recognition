@@ -1,0 +1,33 @@
+
+============================================================
+SUMMARY
+============================================================
+Model: Gated Residual Skip BiLSTM (GRS-BiLSTM)
+Dataset: mHealth (without null class)
+Features Used: 12 features (acc + gyro)
+Noise Level Added: 0.08
+Window Size: 64
+Step Size: 32
+Number of Classes: 12
+Total Parameters: 3,483
+Model Size: 0.07 MB
+
+PERFORMANCE METRICS:
+--------------------
+Best Validation Accuracy: 93.66%
+Test Accuracy: 93.35%
+Macro F1-Score: 0.9335
+Weighted F1-Score: 0.9329
+Macro Precision: 0.9349
+Macro Recall: 0.9369
+Cohen's Kappa: 0.9272
+Matthews Correlation Coefficient: 0.9277
+
+INFERENCE SPEED:
+----------------
+Avg Batch Time: 1.32 ms
+Avg Sample Time: 0.0103 ms
+Throughput: 96657 samples/sec
+
+VISUALIZATIONS GENERATED: 20
+============================================================

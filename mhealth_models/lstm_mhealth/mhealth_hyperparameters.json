@@ -1,0 +1,28 @@
+{
+  "model_name": "Simple LSTM (Unidirectional)",
+  "input_size": 6,
+  "hidden_size": 12,
+  "num_layers": 1,
+  "num_classes": 12,
+  "dropout": 0.4,
+  "learning_rate": 0.0025,
+  "batch_size": 64,
+  "optimizer": "Adam",
+  "weight_decay": 0,
+  "scheduler": "StepLR",
+  "window_size": 64,
+  "step_size": 48,
+  "epochs_trained": 50,
+  "best_val_acc": 80.31716417910448,
+  "test_acc": 79.12395153774465,
+  "features_used": [
+    "acc_chest_x",
+    "acc_chest_y",
+    "acc_chest_z",
+    "acc_ankle_x",
+    "acc_ankle_y",
+    "acc_ankle_z"
+  ],
+  "noise_level": 0.04,
+  "bidirectional": false
+}

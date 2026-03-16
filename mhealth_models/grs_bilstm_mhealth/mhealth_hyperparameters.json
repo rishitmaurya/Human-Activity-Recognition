@@ -1,0 +1,32 @@
+{
+  "model_name": "GRS-BiLSTM (Single Scale)",
+  "input_size": 12,
+  "hidden_size": 10,
+  "num_classes": 12,
+  "dropout": 0.4,
+  "learning_rate": 0.0015,
+  "batch_size": 128,
+  "optimizer": "AdamW",
+  "weight_decay": 5e-05,
+  "scheduler": "StepLR",
+  "window_size": 64,
+  "step_size": 32,
+  "epochs_trained": 50,
+  "best_val_acc": 93.65671641791045,
+  "test_acc": 93.34990677439403,
+  "features_used": [
+    "acc_chest_x",
+    "acc_chest_y",
+    "acc_chest_z",
+    "acc_ankle_x",
+    "acc_ankle_y",
+    "acc_ankle_z",
+    "gyro_ankle_x",
+    "gyro_ankle_y",
+    "gyro_ankle_z",
+    "acc_arm_x",
+    "acc_arm_y",
+    "acc_arm_z"
+  ],
+  "noise_level": 0.08
+}

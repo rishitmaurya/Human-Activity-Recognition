@@ -1,0 +1,18 @@
+                           precision    recall  f1-score   support
+
+           Standing still     0.6568    0.9652    0.7817       115
+     Sitting and relaxing     0.9688    0.8087    0.8815       115
+               Lying down     0.9914    1.0000    0.9957       115
+                  Walking     0.9417    0.9826    0.9617       115
+          Climbing stairs     0.9727    0.9304    0.9511       115
+      Waist bends forward     0.9298    0.9907    0.9593       107
+Frontal elevation of arms     0.9865    0.6577    0.7892       111
+Knees bending (crouching)     0.9787    0.4220    0.5897       109
+                  Cycling     0.6824    1.0000    0.8112       116
+                  Jogging     1.0000    0.7043    0.8265       115
+                  Running     0.7703    0.9913    0.8669       115
+        Jump front & back     0.9286    1.0000    0.9630        39
+
+                 accuracy                         0.8656      1287
+                macro avg     0.9006    0.8711    0.8648      1287
+             weighted avg     0.8980    0.8656    0.8599      1287

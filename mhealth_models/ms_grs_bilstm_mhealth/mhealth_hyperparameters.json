@@ -1,0 +1,18 @@
+{
+  "input_size": 23,
+  "hidden_size": 64,
+  "num_classes": 12,
+  "num_layers": 1,
+  "num_scales": 3,
+  "dropout": 0.3,
+  "learning_rate": 0.001,
+  "batch_size": 128,
+  "optimizer": "AdamW",
+  "weight_decay": 0.0001,
+  "scheduler": "StepLR",
+  "window_size": 128,
+  "step_size": 64,
+  "epochs_trained": 50,
+  "best_val_acc": 99.50248756218906,
+  "test_acc": 99.00621118012423
+}

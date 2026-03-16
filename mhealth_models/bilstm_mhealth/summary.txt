@@ -1,0 +1,43 @@
+
+============================================================
+SUMMARY - Simple BiLSTM
+============================================================
+Model: Simple Bidirectional LSTM (BiLSTM)
+Dataset: mHealth (without null class)
+Features Used: 9 features
+Noise Level Added: 0.08
+Window Size: 64
+Step Size: 40
+Number of Classes: 12
+Total Parameters: 5,276
+Model Size: 0.08 MB
+
+HYPERPARAMETERS:
+----------------
+Hidden Size: 16
+Num Layers: 1
+Dropout: 0.45
+Learning Rate: 0.002
+Batch Size: 128
+Weight Decay: 1e-05
+Epochs: 50
+
+PERFORMANCE METRICS:
+--------------------
+Best Validation Accuracy: 88.03%
+Test Accuracy: 86.56%
+Macro F1-Score: 0.8648
+Weighted F1-Score: 0.8599
+Macro Precision: 0.9006
+Macro Recall: 0.8711
+Cohen's Kappa: 0.8528
+Matthews Correlation Coefficient: 0.8567
+
+INFERENCE SPEED:
+----------------
+Avg Batch Time: 0.48 ms
+Avg Sample Time: 0.0037 ms
+Throughput: 267305 samples/sec
+
+VISUALIZATIONS GENERATED: 20
+============================================================

@@ -1,0 +1,44 @@
+
+============================================================
+SUMMARY - Simple LSTM (Unidirectional)
+============================================================
+Model: Simple LSTM (Unidirectional)
+Dataset: mHealth (without null class)
+Features Used: 6 features
+Noise Level Added: 0.04
+Window Size: 64
+Step Size: 48
+Number of Classes: 12
+Total Parameters: 1,488
+Model Size: 0.03 MB
+
+HYPERPARAMETERS:
+----------------
+Hidden Size: 12
+Num Layers: 1
+Dropout: 0.4
+Learning Rate: 0.0025
+Batch Size: 64
+Weight Decay: 0
+Epochs: 50
+Bidirectional: False
+
+PERFORMANCE METRICS:
+--------------------
+Best Validation Accuracy: 80.32%
+Test Accuracy: 79.12%
+Macro F1-Score: 0.7894
+Weighted F1-Score: 0.7800
+Macro Precision: 0.8320
+Macro Recall: 0.7988
+Cohen's Kappa: 0.7715
+Matthews Correlation Coefficient: 0.7759
+
+INFERENCE SPEED:
+----------------
+Avg Batch Time: 0.41 ms
+Avg Sample Time: 0.0064 ms
+Throughput: 155673 samples/sec
+
+VISUALIZATIONS GENERATED: 20
+============================================================

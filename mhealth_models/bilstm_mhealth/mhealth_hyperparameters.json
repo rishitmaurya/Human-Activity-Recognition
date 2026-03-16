@@ -1,0 +1,30 @@
+{
+  "model_name": "Simple BiLSTM",
+  "input_size": 9,
+  "hidden_size": 16,
+  "num_layers": 1,
+  "num_classes": 12,
+  "dropout": 0.45,
+  "learning_rate": 0.002,
+  "batch_size": 128,
+  "optimizer": "AdamW",
+  "weight_decay": 1e-05,
+  "scheduler": "StepLR",
+  "window_size": 64,
+  "step_size": 40,
+  "epochs_trained": 50,
+  "best_val_acc": 88.03418803418803,
+  "test_acc": 86.55788655788656,
+  "features_used": [
+    "acc_chest_x",
+    "acc_chest_y",
+    "acc_chest_z",
+    "acc_ankle_x",
+    "acc_ankle_y",
+    "acc_ankle_z",
+    "gyro_ankle_x",
+    "gyro_ankle_y",
+    "gyro_ankle_z"
+  ],
+  "noise_level": 0.08
+}

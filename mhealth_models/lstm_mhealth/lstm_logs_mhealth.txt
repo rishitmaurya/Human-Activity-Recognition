@@ -1,63 +1,291 @@
-(env) PS C:\rishit\Human-Activity-Recognition> python .\mhealth_models\lstm_mhealth\lstm_mhealth.py
-Using device: cuda
+(Human-Activity-Recognitions) PS C:\programming\Human-Activity-Recognitions> python .\mhealth_models\lstm_mhealth\test\test.py
+Output directory: mhealth_models/lstm_mhealth/test
+Loading dataset: combined_mhealth.csv
 Dataset shape: (1215745, 24)
-C:\Users\HP\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\nn\modules\rnn.py:123: UserWarning: dropout option adds dropout after all but last recurrent layer, so non-zero dropout expects num_layers greater than 1, but got dropout=0.3 and num_layers=1
-  warnings.warn(
+Columns: ['acc_chest_x', 'acc_chest_y', 'acc_chest_z', 'ecg_lead_1', 'ecg_lead_2', 'acc_ankle_x', 'acc_ankle_y', 'acc_ankle_z', 'gyro_ankle_x', 'gyro_ankle_y', 'gyro_ankle_z', 'mag_ankle_x', 'mag_ankle_y', 'mag_ankle_z', 'acc_arm_x', 'acc_arm_y', 'acc_arm_z', 'gyro_arm_x', 'gyro_arm_y', 'gyro_arm_z', 'mag_arm_x', 'mag_arm_y', 'mag_arm_z', 'label']
+Label distribution:
+label
+0     872550
+1      30720
+2      30720
+3      30720
+4      30720
+5      30720
+6      28315
+7      29441
+8      29337
+9      30720
+10     30720
+11     30720
+12     10342
+Name: count, dtype: int64
 
-Starting training...
+============================================================
+REMOVING NULL CLASS (Label 0) - This class represents no activity
+============================================================
+Dataset shape after removing null class: (343195, 24)
+New label distribution:
+label
+1     30720
+2     30720
+3     30720
+4     30720
+5     30720
+6     28315
+7     29441
+8     29337
+9     30720
+10    30720
+11    30720
+12    10342
+Name: count, dtype: int64
+Number of features: 23
+Using 6 features: ['acc_chest_x', 'acc_chest_y', 'acc_chest_z', 'acc_ankle_x', 'acc_ankle_y', 'acc_ankle_z']
+Number of classes: 12
+Classes: [ 1  2  3  4  5  6  7  8  9 10 11 12]
+Sequences shape: (7149, 64, 6)
+Labels shape: (7149,)
+Sequence label distribution:
+0     641
+1     640
+2     640
+3     640
+4     639
+5     588
+6     612
+7     613
+8     640
+9     640
+10    640
+11    216
+Name: count, dtype: int64
 
-Epoch 01/20 | Loss: 0.4586 | Val Acc: 84.89%
-Epoch 02/20 | Loss: 0.3363 | Val Acc: 86.27%
-Epoch 03/20 | Loss: 0.3136 | Val Acc: 87.04%
-Epoch 04/20 | Loss: 0.3011 | Val Acc: 87.25%
-Epoch 05/20 | Loss: 0.2925 | Val Acc: 87.87%
-Epoch 06/20 | Loss: 0.2863 | Val Acc: 87.97%
-Epoch 07/20 | Loss: 0.2818 | Val Acc: 88.13%
-Epoch 08/20 | Loss: 0.2778 | Val Acc: 88.07%
-Epoch 09/20 | Loss: 0.2747 | Val Acc: 88.17%
-Epoch 10/20 | Loss: 0.2724 | Val Acc: 88.13%
-Epoch 11/20 | Loss: 0.2702 | Val Acc: 87.95%
-Epoch 12/20 | Loss: 0.2682 | Val Acc: 87.93%
-Epoch 13/20 | Loss: 0.2665 | Val Acc: 88.20%
-Epoch 14/20 | Loss: 0.2651 | Val Acc: 88.45%
-Epoch 15/20 | Loss: 0.2635 | Val Acc: 88.30%
-Epoch 16/20 | Loss: 0.2624 | Val Acc: 88.55%
-Epoch 17/20 | Loss: 0.2612 | Val Acc: 88.65%
-Epoch 18/20 | Loss: 0.2602 | Val Acc: 88.52%
-Epoch 19/20 | Loss: 0.2590 | Val Acc: 88.68%
-Epoch 20/20 | Loss: 0.2580 | Val Acc: 88.69%
+Data shapes:
+  X_train: (5004, 64, 6), y_train: (5004,)
+  X_val: (1072, 64, 6), y_val: (1072,)
+  X_test: (1073, 64, 6), y_test: (1073,)
 
-Training completed. Best validation accuracy: 88.69%
-Model saved to: ./mhealth_models\mhealth_simple_lstm.pth
-History saved to: ./mhealth_models\training_history.json
-Label classes saved to: ./mhealth_models\label_classes.json
+Using device: cuda
+Class weights: tensor([0.9287, 0.9308, 0.9308, 0.9308, 0.9329, 1.0121, 0.9743, 0.9720, 0.9308,
+        0.9308, 0.9308, 2.7616], device='cuda:0')
 
-Test Accuracy: 88.6945%
+Model Parameters:
+  Total: 1,488
+  Trainable: 1,488
 
-Final Evaluation:
-              precision    recall  f1-score   support
+Model Architecture:
+SimpleLSTM(
+  (input_proj): Sequential(
+    (0): Linear(in_features=6, out_features=12, bias=True)
+    (1): ReLU()
+    (2): Dropout(p=0.4, inplace=False)
+  )
+  (lstm): LSTM(12, 12, batch_first=True)
+  (dropout): Dropout(p=0.4, inplace=False)
+  (classifier): Sequential(
+    (0): Linear(in_features=12, out_features=12, bias=True)
+  )
+)
 
-           0   0.938275  0.906295  0.922008    174367
-           1   0.757896  0.887423  0.817561      6138
-           2   0.753868  0.952746  0.841719      6137
-           3   0.785920  0.978017  0.871508      6141
-           4   0.766980  0.863103  0.812208      6136
-           5   0.759696  0.683404  0.719533      6134
-           6   0.768181  0.845406  0.804946      5660
-           7   0.776240  0.819232  0.797157      5886
-           8   0.811410  0.705712  0.754879      5865
-           9   0.801669  0.829344  0.815271      6141
-          10   0.784361  0.856584  0.818883      6136
-          11   0.776269  0.884653  0.826925      6138
-          12   0.591879  0.550605  0.570497      2065
+============================================================
+Starting Training - Simple LSTM (Target: ~78% accuracy)
+============================================================
+Epoch [001/50] | Train Loss: 2.2299 | Train Acc: 22.58% | Val Loss: 1.7876 | Val Acc: 34.42% | LR: 2.50e-03
+  → New best model saved! Val Acc: 34.42%
+Epoch [002/50] | Train Loss: 1.6275 | Train Acc: 39.83% | Val Loss: 1.3042 | Val Acc: 50.93% | LR: 2.50e-03
+  → New best model saved! Val Acc: 50.93%
+Epoch [003/50] | Train Loss: 1.2828 | Train Acc: 48.32% | Val Loss: 1.0339 | Val Acc: 59.89% | LR: 2.50e-03
+  → New best model saved! Val Acc: 59.89%
+Epoch [004/50] | Train Loss: 1.1038 | Train Acc: 56.02% | Val Loss: 0.8791 | Val Acc: 63.99% | LR: 2.50e-03
+  → New best model saved! Val Acc: 63.99%
+Epoch [005/50] | Train Loss: 0.9988 | Train Acc: 59.49% | Val Loss: 0.7954 | Val Acc: 69.31% | LR: 2.50e-03
+  → New best model saved! Val Acc: 69.31%
+Epoch [006/50] | Train Loss: 0.9368 | Train Acc: 61.49% | Val Loss: 0.7318 | Val Acc: 72.85% | LR: 1.00e-03
+  → New best model saved! Val Acc: 72.85%
+Epoch [007/50] | Train Loss: 0.8958 | Train Acc: 61.99% | Val Loss: 0.6992 | Val Acc: 74.16% | LR: 1.00e-03
+  → New best model saved! Val Acc: 74.16%
+Epoch [008/50] | Train Loss: 0.8765 | Train Acc: 63.15% | Val Loss: 0.6827 | Val Acc: 76.68% | LR: 1.00e-03
+  → New best model saved! Val Acc: 76.68%
+Epoch [009/50] | Train Loss: 0.8538 | Train Acc: 64.77% | Val Loss: 0.6618 | Val Acc: 76.21% | LR: 1.00e-03
+Epoch [010/50] | Train Loss: 0.8347 | Train Acc: 65.65% | Val Loss: 0.6402 | Val Acc: 77.61% | LR: 1.00e-03
+  → New best model saved! Val Acc: 77.61%
+Epoch [011/50] | Train Loss: 0.8178 | Train Acc: 64.53% | Val Loss: 0.6289 | Val Acc: 78.92% | LR: 1.00e-03
+  → New best model saved! Val Acc: 78.92%
+Epoch [012/50] | Train Loss: 0.8109 | Train Acc: 66.85% | Val Loss: 0.6196 | Val Acc: 75.75% | LR: 4.00e-04
+Epoch [013/50] | Train Loss: 0.8006 | Train Acc: 66.87% | Val Loss: 0.6057 | Val Acc: 77.52% | LR: 4.00e-04
+Epoch [014/50] | Train Loss: 0.8008 | Train Acc: 66.05% | Val Loss: 0.6021 | Val Acc: 77.99% | LR: 4.00e-04
+Epoch [015/50] | Train Loss: 0.7918 | Train Acc: 67.19% | Val Loss: 0.6017 | Val Acc: 77.61% | LR: 4.00e-04
+Epoch [016/50] | Train Loss: 0.7723 | Train Acc: 68.15% | Val Loss: 0.5902 | Val Acc: 79.20% | LR: 4.00e-04
+  → New best model saved! Val Acc: 79.20%
+Epoch [017/50] | Train Loss: 0.7692 | Train Acc: 67.61% | Val Loss: 0.5847 | Val Acc: 78.45% | LR: 4.00e-04
+Epoch [018/50] | Train Loss: 0.7689 | Train Acc: 67.67% | Val Loss: 0.5796 | Val Acc: 79.10% | LR: 1.60e-04
+Epoch [019/50] | Train Loss: 0.7607 | Train Acc: 67.67% | Val Loss: 0.5751 | Val Acc: 79.57% | LR: 1.60e-04
+  → New best model saved! Val Acc: 79.57%
+Epoch [020/50] | Train Loss: 0.7586 | Train Acc: 68.43% | Val Loss: 0.5728 | Val Acc: 79.94% | LR: 1.60e-04
+  → New best model saved! Val Acc: 79.94%
+Epoch [021/50] | Train Loss: 0.7563 | Train Acc: 68.33% | Val Loss: 0.5720 | Val Acc: 80.13% | LR: 1.60e-04
+  → New best model saved! Val Acc: 80.13%
+Epoch [022/50] | Train Loss: 0.7500 | Train Acc: 68.73% | Val Loss: 0.5703 | Val Acc: 79.76% | LR: 1.60e-04
+Epoch [023/50] | Train Loss: 0.7667 | Train Acc: 68.41% | Val Loss: 0.5658 | Val Acc: 79.94% | LR: 1.60e-04
+Epoch [024/50] | Train Loss: 0.7422 | Train Acc: 68.53% | Val Loss: 0.5642 | Val Acc: 80.13% | LR: 6.40e-05
+Epoch [025/50] | Train Loss: 0.7462 | Train Acc: 68.88% | Val Loss: 0.5617 | Val Acc: 80.32% | LR: 6.40e-05
+  → New best model saved! Val Acc: 80.32%
+Epoch [026/50] | Train Loss: 0.7460 | Train Acc: 68.69% | Val Loss: 0.5603 | Val Acc: 80.22% | LR: 6.40e-05
+Epoch [027/50] | Train Loss: 0.7548 | Train Acc: 68.69% | Val Loss: 0.5588 | Val Acc: 80.32% | LR: 6.40e-05
+Epoch [028/50] | Train Loss: 0.7316 | Train Acc: 69.92% | Val Loss: 0.5608 | Val Acc: 80.04% | LR: 6.40e-05
+Epoch [029/50] | Train Loss: 0.7464 | Train Acc: 69.10% | Val Loss: 0.5600 | Val Acc: 79.94% | LR: 6.40e-05
+Epoch [030/50] | Train Loss: 0.7387 | Train Acc: 68.63% | Val Loss: 0.5581 | Val Acc: 79.94% | LR: 2.56e-05
+Epoch [031/50] | Train Loss: 0.7473 | Train Acc: 67.59% | Val Loss: 0.5579 | Val Acc: 80.04% | LR: 2.56e-05
+Epoch [032/50] | Train Loss: 0.7408 | Train Acc: 68.71% | Val Loss: 0.5566 | Val Acc: 80.04% | LR: 2.56e-05
+Epoch [033/50] | Train Loss: 0.7357 | Train Acc: 69.34% | Val Loss: 0.5563 | Val Acc: 80.04% | LR: 2.56e-05
+Epoch [034/50] | Train Loss: 0.7490 | Train Acc: 68.63% | Val Loss: 0.5570 | Val Acc: 80.13% | LR: 2.56e-05
+Epoch [035/50] | Train Loss: 0.7432 | Train Acc: 69.24% | Val Loss: 0.5566 | Val Acc: 80.04% | LR: 2.56e-05
+Epoch [036/50] | Train Loss: 0.7369 | Train Acc: 69.06% | Val Loss: 0.5560 | Val Acc: 80.13% | LR: 1.02e-05
+Epoch [037/50] | Train Loss: 0.7508 | Train Acc: 68.69% | Val Loss: 0.5557 | Val Acc: 80.22% | LR: 1.02e-05
+Epoch [038/50] | Train Loss: 0.7405 | Train Acc: 68.31% | Val Loss: 0.5558 | Val Acc: 80.22% | LR: 1.02e-05
+Epoch [039/50] | Train Loss: 0.7428 | Train Acc: 68.76% | Val Loss: 0.5555 | Val Acc: 80.13% | LR: 1.02e-05
+Epoch [040/50] | Train Loss: 0.7352 | Train Acc: 69.36% | Val Loss: 0.5558 | Val Acc: 80.13% | LR: 1.02e-05
+Epoch [041/50] | Train Loss: 0.7366 | Train Acc: 69.32% | Val Loss: 0.5564 | Val Acc: 80.13% | LR: 1.02e-05
+Epoch [042/50] | Train Loss: 0.7375 | Train Acc: 67.47% | Val Loss: 0.5558 | Val Acc: 80.32% | LR: 4.10e-06
+Epoch [043/50] | Train Loss: 0.7349 | Train Acc: 69.10% | Val Loss: 0.5558 | Val Acc: 80.22% | LR: 4.10e-06
+Epoch [044/50] | Train Loss: 0.7501 | Train Acc: 68.21% | Val Loss: 0.5556 | Val Acc: 80.32% | LR: 4.10e-06
+Epoch [045/50] | Train Loss: 0.7373 | Train Acc: 68.76% | Val Loss: 0.5555 | Val Acc: 80.13% | LR: 4.10e-06
+Epoch [046/50] | Train Loss: 0.7430 | Train Acc: 68.37% | Val Loss: 0.5555 | Val Acc: 80.13% | LR: 4.10e-06
+Epoch [047/50] | Train Loss: 0.7396 | Train Acc: 68.25% | Val Loss: 0.5556 | Val Acc: 80.13% | LR: 4.10e-06
+Epoch [048/50] | Train Loss: 0.7427 | Train Acc: 68.75% | Val Loss: 0.5555 | Val Acc: 80.13% | LR: 1.64e-06
+Epoch [049/50] | Train Loss: 0.7339 | Train Acc: 69.02% | Val Loss: 0.5555 | Val Acc: 80.13% | LR: 1.64e-06
+Epoch [050/50] | Train Loss: 0.7418 | Train Acc: 69.24% | Val Loss: 0.5554 | Val Acc: 80.13% | LR: 1.64e-06
 
-    accuracy                       0.886945    242944
-   macro avg   0.774819  0.827886  0.797930    242944
-weighted avg   0.891044  0.886945  0.887699    242944
+============================================================
+Training completed! Best Val Acc: 80.32%
+============================================================
+
+Loading best model for evaluation...
+
+============================================================
+TEST RESULTS - Simple LSTM (Unidirectional)
+============================================================
+Test Loss: 0.5843
+Test Accuracy: 79.12%
+============================================================
+
+Saved files to mhealth_models/lstm_mhealth/test
+
+============================================================
+DETAILED EVALUATION
+============================================================
+
+Model size: 0.03 MB
+Average inference time per batch: 0.41 ms
+Average inference time per sample: 0.0064 ms
+Throughput: 155673 samples/sec
+
+============================================================
+CLASSIFICATION REPORT
+============================================================
+                           precision    recall  f1-score   support
+
+           Standing still     0.6557    0.8333    0.7339        96
+     Sitting and relaxing     0.7885    0.4271    0.5541        96
+               Lying down     1.0000    1.0000    1.0000        96
+                  Walking     0.9897    1.0000    0.9948        96
+          Climbing stairs     0.8505    0.9479    0.8966        96
+      Waist bends forward     0.9326    0.9432    0.9379        88
+Frontal elevation of arms     0.5351    0.6630    0.5922        92
+Knees bending (crouching)     0.9535    0.4457    0.6074        92
+                  Cycling     0.7188    0.9583    0.8214        96
+                  Jogging     0.9556    0.4479    0.6099        96
+                  Running     0.6351    0.9792    0.7705        96
+        Jump front & back     0.9688    0.9394    0.9538        33
+
+                 accuracy                         0.7912      1073
+                macro avg     0.8320    0.7988    0.7894      1073
+             weighted avg     0.8238    0.7912    0.7800      1073
 
 
-Inference Time:
- - Batch (size=256): 6.000 ms
- - Single sample: 10.999 ms
+Per-class Metrics:
+--------------------------------------------------
+  Standing still: 83.33% (96 samples)
+  Sitting and relaxing: 42.71% (96 samples)
+  Lying down: 100.00% (96 samples)
+  Walking: 100.00% (96 samples)
+  Climbing stairs: 94.79% (96 samples)
+  Waist bends forward: 94.32% (88 samples)
+  Frontal elevation of arms: 66.30% (92 samples)
+  Knees bending (crouching): 44.57% (92 samples)
+  Cycling: 95.83% (96 samples)
+  Jogging: 44.79% (96 samples)
+  Running: 97.92% (96 samples)
+  Jump front & back: 93.94% (33 samples)
 
-Model Size: 0.09 MB
+============================================================
+GENERATING VISUALIZATIONS
+============================================================
+✓ Saved: mhealth_accuracy_loss_curves.png
+✓ Saved: mhealth_confusion_matrix.png
+✓ Saved: mhealth_confusion_matrix_raw.png
+✓ Saved: mhealth_learning_rate.png
+✓ Saved: mhealth_per_class_accuracy.png
+✓ Saved: mhealth_precision_recall_f1.png
+✓ Saved: mhealth_training_subplots.png
+✓ Saved: mhealth_class_distribution.png
+✓ Saved: mhealth_roc_curves.png
+✓ Saved: mhealth_precision_recall_curves.png
+Computing t-SNE visualization...
+✓ Saved: mhealth_tsne_features.png
+✓ Saved: mhealth_pca_features.png
+✓ Saved: mhealth_confidence_distribution.png
+✓ Saved: mhealth_confidence_boxplot.png
+✓ Saved: mhealth_misclassification_analysis.png
+✓ Saved: mhealth_metrics_radar.png
+✓ Saved: mhealth_error_rate.png
+✓ Saved: mhealth_sample_predictions.png
+✓ Saved: mhealth_metrics_heatmap.png
+✓ Saved: mhealth_training_progress.png
+
+============================================================
+SUMMARY - Simple LSTM (Unidirectional)
+============================================================
+Model: Simple LSTM (Unidirectional)
+Dataset: mHealth (without null class)
+Features Used: 6 features
+Noise Level Added: 0.04
+Window Size: 64
+Step Size: 48
+Number of Classes: 12
+Total Parameters: 1,488
+Model Size: 0.03 MB
+
+HYPERPARAMETERS:
+----------------
+Hidden Size: 12
+Num Layers: 1
+Dropout: 0.4
+Learning Rate: 0.0025
+Batch Size: 64
+Weight Decay: 0
+Epochs: 50
+Bidirectional: False
+
+PERFORMANCE METRICS:
+--------------------
+Best Validation Accuracy: 80.32%
+Macro F1-Score: 0.7894
+Weighted F1-Score: 0.7800
+Macro Precision: 0.8320
+Macro Recall: 0.7988
+Cohen's Kappa: 0.7715
+Matthews Correlation Coefficient: 0.7759
+
+INFERENCE SPEED:
+----------------
+Avg Batch Time: 0.41 ms
+Avg Sample Time: 0.0064 ms
+Throughput: 155673 samples/sec
+
+VISUALIZATIONS GENERATED: 20
+============================================================
+
+
+✅ All results saved to: mhealth_models/lstm_mhealth/test
+📊 Total visualizations generated: 20

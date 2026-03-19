@@ -1,76 +1,86 @@
 
 ======================================================================
-SUMMARY - GRS-BiLSTM on UCI HAR
+SUMMARY - GRS-BiLSTM
 ======================================================================
-Model: GRS-BiLSTM
+Model: GRSBiLSTM
 Dataset: UCI Human Activity Recognition
-Features Used: 561 features (ALL)
+Features Used: 110 features (out of 561)
 Sequence Length: 3
-Features per Step: 561
+Features per Step: 110
 Number of Classes: 6
 Class Names: ['WALKING', 'WALKING_UPSTAIRS', 'WALKING_DOWNSTAIRS', 'SITTING', 'STANDING', 'LAYING']
 
 MODEL SPECIFICATIONS:
 ---------------------
-Total Parameters: 138,221
-Trainable Parameters: 138,221
-Model Size: 1,735,588 bytes (1694.91 KB, 1.6552 MB)
+Total Parameters: 43,271
+Trainable Parameters: 43,271
+Model Size: 552,252 bytes (539.31 KB, 0.5267 MB)
 Hidden Size: 64
 Number of Layers: 1
-Dropout: 0.5
+Dropout: 0.55
 
-REGULARIZATION TECHNIQUES:
---------------------------
-- Mixup Augmentation (alpha=0.1)
-- Label Smoothing Cross Entropy (smoothing=0.05)
-- Weight Decay: 0.0008
-- Feature Noise Std: 0.01
-- Auxiliary Classifier Loss
-- Multiple Dropout layers
+ARCHITECTURE DETAILS:
+---------------------
+- Single linear input projection
+- 1-layer BiLSTM (hidden=32 per direction)
+- Single Gated Residual Unit
+- Simple attention pooling
+- Single classifier head (no auxiliary)
+- ReLU activations
+- No multi-scale processing
+
+REGULARIZATION:
+--------------
+- Dropout: 0.55
+- Weight Decay: 0.01
+- Feature Noise (train): 0.08
+- Feature Subset: 110/561
+- Gradient Clipping: 1.0
+- No Mixup, No Label Smoothing
 
 TRAINING CONFIGURATION:
 -----------------------
-Learning Rate: 0.001
-Batch Size: 64
-Optimizer: AdamW
-Weight Decay: 0.0008
-Scheduler: OneCycleLR
+Learning Rate: 0.002
+Batch Size: 128
+Optimizer: Adam
+Weight Decay: 0.01
+Scheduler: StepLR (step=12, gamma=0.5)
+Loss: CrossEntropyLoss (weighted)
 Epochs Trained: 50
-Training Time: 71.18 seconds
+Training Time: 19.29 seconds
+Best Validation Loss: 0.1428
 
 DATA SPLIT:
 -----------
-Training Samples: 6984
-Validation Samples: 368
+Training Samples: 6249
+Validation Samples: 1103
 Test Samples: 2947
 
 PERFORMANCE METRICS:
 --------------------
-Best Validation Accuracy: 99.46%
-Best Validation Loss: 0.4367
-Best Test Accuracy: 95.05%
-Final Test Accuracy: 95.11%
-Macro F1-Score: 0.9508
-Weighted F1-Score: 0.9510
-Macro Precision: 0.9533
-Macro Recall: 0.9500
-Cohen's Kappa: 0.9413
-Matthews Correlation Coefficient: 0.9416
+Best Test Accuracy: 90.40%
+Final Test Accuracy: 91.28%
+Macro F1-Score: 0.9138
+Weighted F1-Score: 0.9126
+Macro Precision: 0.9172
+Macro Recall: 0.9128
+Cohen's Kappa: 0.8952
+Matthews Correlation Coefficient: 0.8957
 
 INFERENCE SPEED:
 ----------------
-Avg Batch Time: 2.91 ms
-Avg Sample Time: 0.0455 ms
-Throughput: 21985 samples/sec
+Avg Batch Time: 1.10 ms
+Avg Sample Time: 0.0086 ms
+Throughput: 116028 samples/sec
 
 PER-CLASS ACCURACY:
 -------------------
-  WALKING: 96.57%
-  WALKING_UPSTAIRS: 94.48%
-  WALKING_DOWNSTAIRS: 95.00%
-  SITTING: 86.56%
-  STANDING: 97.37%
-  LAYING: 100.00%
+  WALKING: 99.19%
+  WALKING_UPSTAIRS: 92.36%
+  WALKING_DOWNSTAIRS: 93.81%
+  SITTING: 76.37%
+  STANDING: 88.53%
+  LAYING: 97.39%
 
 VISUALIZATIONS GENERATED: 21
 ======================================================================

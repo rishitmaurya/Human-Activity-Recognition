@@ -1,0 +1,86 @@
+
+======================================================================
+SUMMARY - LSTM
+======================================================================
+Model: LSTM (Plain Unidirectional LSTM)
+Dataset: UCI Human Activity Recognition
+Features Used: 100 features (out of 561)
+Sequence Length: 3
+Features per Step: 100
+Number of Classes: 6
+Class Names: ['WALKING', 'WALKING_UPSTAIRS', 'WALKING_DOWNSTAIRS', 'SITTING', 'STANDING', 'LAYING']
+
+MODEL SPECIFICATIONS:
+---------------------
+Total Parameters: 12,471
+Trainable Parameters: 12,471
+Model Size: 168,485 bytes (164.54 KB, 0.1607 MB)
+Hidden Size: 32
+Number of Layers: 1
+Dropout: 0.6
+
+ARCHITECTURE DETAILS:
+---------------------
+- Single linear input projection
+- 1-layer LSTM (unidirectional, hidden=32)
+- NO Bidirectional processing
+- NO Gated Residual Unit
+- Simple attention pooling
+- Single classifier head
+- ReLU activations
+
+REGULARIZATION:
+--------------
+- Dropout: 0.6
+- Weight Decay: 0.05
+- Feature Noise (train): 0.08
+- Feature Subset: 100/561
+- Gradient Clipping: 1.0
+- No Mixup, No Label Smoothing
+
+TRAINING CONFIGURATION:
+-----------------------
+Learning Rate: 0.0001
+Batch Size: 64
+Optimizer: Adam
+Weight Decay: 0.05
+Scheduler: StepLR (step=12, gamma=0.5)
+Loss: CrossEntropyLoss (weighted)
+Epochs Trained: 50
+Training Time: 24.13 seconds
+Best Validation Loss: 0.7207
+
+DATA SPLIT:
+-----------
+Training Samples: 6249
+Validation Samples: 1103
+Test Samples: 2947
+
+PERFORMANCE METRICS:
+--------------------
+Best Test Accuracy: 80.93%
+Final Test Accuracy: 80.93%
+Macro F1-Score: 0.7963
+Weighted F1-Score: 0.7964
+Macro Precision: 0.8285
+Macro Recall: 0.8047
+Cohen's Kappa: 0.7703
+Matthews Correlation Coefficient: 0.7783
+
+INFERENCE SPEED:
+----------------
+Avg Batch Time: 0.81 ms
+Avg Sample Time: 0.0126 ms
+Throughput: 79342 samples/sec
+
+PER-CLASS ACCURACY:
+-------------------
+  WALKING: 96.98%
+  WALKING_UPSTAIRS: 82.80%
+  WALKING_DOWNSTAIRS: 79.05%
+  SITTING: 35.64%
+  STANDING: 91.35%
+  LAYING: 97.02%
+
+VISUALIZATIONS GENERATED: 21
+======================================================================

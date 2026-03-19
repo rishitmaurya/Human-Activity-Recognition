@@ -1,0 +1,337 @@
+(Human-Activity-Recognitions) PS C:\programming\Human-Activity-Recognitions> python .\uci_models\grs_bilstm_uci\grs_bilstm_uci.py
+Output directory: uci_models/grs_bilstm_uci/test
+Loading dataset: UCI_HAR_Dataset.csv
+Dataset shape: (10299, 565)
+Columns (first 10): ['subject_id', 'activity_id', 'activity_name', 'set_type', 'tBodyAcc-mean()-X', 'tBodyAcc-mean()-Y', 'tBodyAcc-mean()-Z', 'tBodyAcc-std()-X', 'tBodyAcc-std()-Y', 'tBodyAcc-std()-Z']
+Columns (last 10): ['fBodyBodyGyroJerkMag-meanFreq()', 'fBodyBodyGyroJerkMag-skewness()', 'fBodyBodyGyroJerkMag-kurtosis()', 'angle(tBodyAccMean,gravity)', 'angle(tBodyAccJerkMean),gravityMean)', 'angle(tBodyGyroMean,gravityMean)', 'angle(tBodyGyroJerkMean,gravityMean)', 'angle(X,gravityMean)', 'angle(Y,gravityMean)', 'angle(Z,gravityMean)']
+
+Activity distribution:
+activity_name
+LAYING                1944
+STANDING              1906
+SITTING               1777
+WALKING               1722
+WALKING_UPSTAIRS      1544
+WALKING_DOWNSTAIRS    1406
+Name: count, dtype: int64
+
+Set type distribution:
+set_type
+train    7352
+test     2947
+Name: count, dtype: int64
+
+Subject distribution:
+Total subjects: 30
+
+Total feature columns available: 561
+Using SUBSET of 110 features (out of 561)
+Selected features (first 10): ['tBodyAcc-std()-Z', 'tBodyAcc-max()-X', 'tBodyAcc-max()-Z', 'tBodyAcc-min()-Y', 'tBodyAcc-sma()', 'tBodyAcc-arCoeff()-Z,1', 'tBodyAcc-arCoeff()-Z,2', 'tBodyAcc-arCoeff()-Z,3', 'tBodyAcc-arCoeff()-Z,4', 'tGravityAcc-mad()-Z']
+
+Number of classes: 6
+Classes: [1 2 3 4 5 6]
+Class names: ['WALKING', 'WALKING_UPSTAIRS', 'WALKING_DOWNSTAIRS', 'SITTING', 'STANDING', 'LAYING']
+
+Original split:
+  Train: 7352 samples
+  Test: 2947 samples
+
+Final split:
+  Train: 6249 samples
+  Val: 1103 samples
+  Test: 2947 samples
+
+Reshaped data:
+  X_train: (6249, 3, 110)
+  X_val: (1103, 3, 110)
+  X_test: (2947, 3, 110)
+  Sequence length: 3
+  Features per step: 110
+
+Using device: cuda
+Class weights: tensor([0.9995, 1.1420, 1.2428, 0.9529, 0.8917, 0.8708], device='cuda:0')
+
+Hyperparameters:
+  Batch Size: 128
+  Hidden Size: 64
+  Num Layers: 1
+  Dropout: 0.55
+  Learning Rate: 0.002
+  Weight Decay: 0.01
+  Mixup Alpha: 0.0
+  Epochs: 50
+  Features Used: 110/561
+
+Model Parameters:
+  Total: 43,271
+  Trainable: 43,271
+
+Model Architecture:
+GRSBiLSTM(
+  (input_proj): Sequential(
+    (0): Linear(in_features=110, out_features=64, bias=True)
+    (1): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+    (2): ReLU()
+    (3): Dropout(p=0.55, inplace=False)
+  )
+  (bilstm): LSTM(64, 32, batch_first=True, bidirectional=True)
+  (gru): GatedResidualUnit(
+    (fc1): Linear(in_features=64, out_features=32, bias=True)
+    (fc2): Linear(in_features=32, out_features=64, bias=True)
+    (gate): Linear(in_features=64, out_features=64, bias=True)
+    (norm): LayerNorm((64,), eps=1e-05, elementwise_affine=True)       
+    (dropout): Dropout(p=0.55, inplace=False)
+  )
+  (attention): Linear(in_features=64, out_features=1, bias=True)       
+  (classifier): Sequential(
+    (0): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+    (1): Linear(in_features=64, out_features=32, bias=True)
+    (2): ReLU()
+    (3): Dropout(p=0.55, inplace=False)
+    (4): Linear(in_features=32, out_features=6, bias=True)
+  )
+)
+
+====================================================================== 
+Starting Training - GRS-BiLSTM
+====================================================================== 
+Epoch [001/50] | Train: 45.91% | Val: 82.32% | Test: 0.00% | LR: 2.00e-03
+  → New best! Val Loss: 0.4687, Val Acc: 82.32%, Test Acc: 0.00%
+Epoch [002/50] | Train: 75.08% | Val: 86.76% | Test: 0.00% | LR: 2.00e-03
+  → New best! Val Loss: 0.3062, Val Acc: 86.76%, Test Acc: 0.00%
+Epoch [003/50] | Train: 80.96% | Val: 89.03% | Test: 0.00% | LR: 2.00e-03
+  → New best! Val Loss: 0.2565, Val Acc: 89.03%, Test Acc: 0.00%
+Epoch [004/50] | Train: 84.26% | Val: 90.39% | Test: 0.00% | LR: 2.00e-03
+  → New best! Val Loss: 0.2291, Val Acc: 90.39%, Test Acc: 0.00%
+Epoch [005/50] | Train: 86.30% | Val: 92.57% | Test: 89.62% | LR: 2.00e-03
+  → New best! Val Loss: 0.2109, Val Acc: 92.57%, Test Acc: 89.62%
+Epoch [006/50] | Train: 88.20% | Val: 90.03% | Test: 89.62% | LR: 2.00e-03
+Epoch [007/50] | Train: 87.47% | Val: 89.76% | Test: 89.62% | LR: 2.00e-03
+Epoch [008/50] | Train: 88.49% | Val: 91.57% | Test: 89.62% | LR: 2.00e-03
+  → New best! Val Loss: 0.1989, Val Acc: 91.57%, Test Acc: 89.62%
+Epoch [009/50] | Train: 88.25% | Val: 89.57% | Test: 89.62% | LR: 2.00e-03
+Epoch [010/50] | Train: 88.59% | Val: 92.66% | Test: 90.06% | LR: 2.00e-03
+  → New best! Val Loss: 0.1817, Val Acc: 92.66%, Test Acc: 90.06%
+Epoch [011/50] | Train: 88.54% | Val: 92.02% | Test: 90.06% | LR: 2.00e-03
+Epoch [012/50] | Train: 89.53% | Val: 93.38% | Test: 90.06% | LR: 1.00e-03
+Epoch [013/50] | Train: 89.62% | Val: 93.29% | Test: 90.06% | LR: 1.00e-03
+  → New best! Val Loss: 0.1701, Val Acc: 93.29%, Test Acc: 90.06%
+Epoch [014/50] | Train: 89.79% | Val: 91.93% | Test: 90.06% | LR: 1.00e-03
+Epoch [015/50] | Train: 90.38% | Val: 93.20% | Test: 89.96% | LR: 1.00e-03
+  → New best! Val Loss: 0.1697, Val Acc: 93.20%, Test Acc: 89.96%
+Epoch [016/50] | Train: 90.58% | Val: 92.29% | Test: 89.96% | LR: 1.00e-03
+Epoch [017/50] | Train: 90.82% | Val: 92.48% | Test: 89.96% | LR: 1.00e-03
+  → New best! Val Loss: 0.1639, Val Acc: 92.48%, Test Acc: 89.96%
+Epoch [018/50] | Train: 90.92% | Val: 93.74% | Test: 89.96% | LR: 1.00e-03
+Epoch [019/50] | Train: 90.51% | Val: 92.02% | Test: 89.96% | LR: 1.00e-03
+Epoch [020/50] | Train: 91.06% | Val: 93.29% | Test: 90.16% | LR: 1.00e-03
+Epoch [021/50] | Train: 90.98% | Val: 93.56% | Test: 90.16% | LR: 1.00e-03
+  → New best! Val Loss: 0.1624, Val Acc: 93.56%, Test Acc: 90.16%
+Epoch [022/50] | Train: 90.84% | Val: 94.02% | Test: 90.16% | LR: 1.00e-03
+  → New best! Val Loss: 0.1591, Val Acc: 94.02%, Test Acc: 90.16%
+Epoch [023/50] | Train: 90.72% | Val: 92.75% | Test: 90.16% | LR: 1.00e-03
+Epoch [024/50] | Train: 91.37% | Val: 92.75% | Test: 90.16% | LR: 5.00e-04
+Epoch [025/50] | Train: 92.06% | Val: 93.65% | Test: 90.40% | LR: 5.00e-04
+  → New best! Val Loss: 0.1571, Val Acc: 93.65%, Test Acc: 90.40%
+Epoch [026/50] | Train: 92.76% | Val: 94.11% | Test: 90.40% | LR: 5.00e-04
+  → New best! Val Loss: 0.1471, Val Acc: 94.11%, Test Acc: 90.40%
+Epoch [027/50] | Train: 92.68% | Val: 94.20% | Test: 90.40% | LR: 5.00e-04
+  → New best! Val Loss: 0.1464, Val Acc: 94.20%, Test Acc: 90.40%
+Epoch [028/50] | Train: 92.38% | Val: 94.92% | Test: 90.40% | LR: 5.00e-04
+  → New best! Val Loss: 0.1428, Val Acc: 94.92%, Test Acc: 90.40%
+Epoch [029/50] | Train: 92.24% | Val: 94.56% | Test: 90.40% | LR: 5.00e-04
+Epoch [030/50] | Train: 92.53% | Val: 94.02% | Test: 91.14% | LR: 5.00e-04
+Epoch [031/50] | Train: 92.51% | Val: 94.65% | Test: 91.14% | LR: 5.00e-04
+Epoch [032/50] | Train: 92.45% | Val: 93.29% | Test: 91.14% | LR: 5.00e-04
+Epoch [033/50] | Train: 92.24% | Val: 94.11% | Test: 91.14% | LR: 5.00e-04
+Epoch [034/50] | Train: 92.53% | Val: 94.02% | Test: 91.14% | LR: 5.00e-04
+Epoch [035/50] | Train: 92.53% | Val: 94.74% | Test: 90.91% | LR: 5.00e-04
+Epoch [036/50] | Train: 92.43% | Val: 93.56% | Test: 90.91% | LR: 2.50e-04
+Epoch [037/50] | Train: 93.15% | Val: 94.20% | Test: 90.91% | LR: 2.50e-04
+Epoch [038/50] | Train: 92.95% | Val: 94.74% | Test: 90.91% | LR: 2.50e-04
+Epoch [039/50] | Train: 93.31% | Val: 94.65% | Test: 90.91% | LR: 2.50e-04
+Epoch [040/50] | Train: 93.26% | Val: 94.11% | Test: 91.62% | LR: 2.50e-04
+Epoch [041/50] | Train: 93.67% | Val: 95.10% | Test: 91.62% | LR: 2.50e-04
+Epoch [042/50] | Train: 93.60% | Val: 94.47% | Test: 91.62% | LR: 2.50e-04
+Epoch [043/50] | Train: 93.23% | Val: 95.19% | Test: 91.62% | LR: 2.50e-04
+Epoch [044/50] | Train: 93.08% | Val: 95.10% | Test: 91.62% | LR: 2.50e-04
+Epoch [045/50] | Train: 93.65% | Val: 94.74% | Test: 91.14% | LR: 2.50e-04
+Epoch [046/50] | Train: 93.88% | Val: 95.19% | Test: 91.14% | LR: 2.50e-04
+Epoch [047/50] | Train: 93.62% | Val: 94.38% | Test: 91.14% | LR: 2.50e-04
+Epoch [048/50] | Train: 93.83% | Val: 94.65% | Test: 91.14% | LR: 1.25e-04
+Epoch [049/50] | Train: 94.16% | Val: 95.38% | Test: 91.14% | LR: 1.25e-04
+Epoch [050/50] | Train: 94.22% | Val: 94.65% | Test: 91.65% | LR: 1.25e-04
+
+====================================================================== 
+Training completed in 19.29 seconds!
+Best Test Acc: 90.40%
+====================================================================== 
+
+Loading best model for final evaluation...
+
+====================================================================== 
+FINAL TEST RESULTS
+====================================================================== 
+Test Loss: 0.3096
+Test Accuracy: 91.28%
+====================================================================== 
+
+Saved files to uci_models/grs_bilstm_uci/test
+
+====================================================================== 
+DETAILED EVALUATION
+====================================================================== 
+
+Model size:
+  Bytes: 552,252
+  KB: 539.31
+  MB: 0.5267
+
+Inference timing:
+  Average batch time: 1.10 ms
+  Average sample time: 0.0086 ms
+  Throughput: 116028 samples/sec
+
+====================================================================== 
+CLASSIFICATION REPORT
+====================================================================== 
+                    precision    recall  f1-score   support
+
+           WALKING     0.9283    0.9919    0.9591       496
+  WALKING_UPSTAIRS     0.9498    0.9236    0.9365       471
+WALKING_DOWNSTAIRS     0.9801    0.9381    0.9586       420
+           SITTING     0.8621    0.7637    0.8099       491
+          STANDING     0.7943    0.8853    0.8373       532
+            LAYING     0.9887    0.9739    0.9812       537
+
+          accuracy                         0.9128      2947
+         macro avg     0.9172    0.9128    0.9138      2947
+      weighted avg     0.9149    0.9128    0.9126      2947
+
+
+Per-class Metrics:
+------------------------------------------------------------
+  WALKING: 99.19% (496 samples)
+  WALKING_UPSTAIRS: 92.36% (471 samples)
+  WALKING_DOWNSTAIRS: 93.81% (420 samples)
+  SITTING: 76.37% (491 samples)
+  STANDING: 88.53% (532 samples)
+  LAYING: 97.39% (537 samples)
+
+====================================================================== 
+GENERATING VISUALIZATIONS
+====================================================================== 
+✓ Saved: uci_accuracy_loss_curves.png
+✓ Saved: uci_confusion_matrix.png
+✓ Saved: uci_confusion_matrix_raw.png
+✓ Saved: uci_learning_rate.png
+✓ Saved: uci_per_class_accuracy.png
+✓ Saved: uci_precision_recall_f1.png
+✓ Saved: uci_training_subplots.png
+✓ Saved: uci_class_distribution.png
+✓ Saved: uci_roc_curves.png
+✓ Saved: uci_precision_recall_curves.png
+Computing t-SNE visualization...
+✓ Saved: uci_tsne_features.png
+✓ Saved: uci_pca_features.png
+✓ Saved: uci_confidence_distribution.png
+✓ Saved: uci_confidence_boxplot.png
+✓ Saved: uci_misclassification_analysis.png
+✓ Saved: uci_metrics_radar.png
+✓ Saved: uci_error_rate.png
+✓ Saved: uci_sample_predictions.png
+✓ Saved: uci_metrics_heatmap.png
+✓ Saved: uci_training_progress.png
+✓ Saved: uci_model_architecture.png
+
+====================================================================== 
+SUMMARY - GRS-BiLSTM
+====================================================================== 
+Model: GRSBiLSTM
+Dataset: UCI Human Activity Recognition
+Features Used: 110 features (out of 561)
+Sequence Length: 3
+Features per Step: 110
+Number of Classes: 6
+Class Names: ['WALKING', 'WALKING_UPSTAIRS', 'WALKING_DOWNSTAIRS', 'SITTING', 'STANDING', 'LAYING']
+
+MODEL SPECIFICATIONS:
+---------------------
+Total Parameters: 43,271
+Trainable Parameters: 43,271
+Model Size: 552,252 bytes (539.31 KB, 0.5267 MB)
+Hidden Size: 64
+Number of Layers: 1
+Dropout: 0.55
+
+ARCHITECTURE DETAILS:
+---------------------
+- Single linear input projection
+- 1-layer BiLSTM (hidden=32 per direction)
+- Single Gated Residual Unit
+- Simple attention pooling
+- Single classifier head (no auxiliary)
+- ReLU activations
+- No multi-scale processing
+
+REGULARIZATION:
+--------------
+- Dropout: 0.55
+- Weight Decay: 0.01
+- Feature Noise (train): 0.08
+- Feature Subset: 110/561
+- Gradient Clipping: 1.0
+- No Mixup, No Label Smoothing
+
+TRAINING CONFIGURATION:
+-----------------------
+Learning Rate: 0.002
+Batch Size: 128
+Optimizer: Adam
+Weight Decay: 0.01
+Scheduler: StepLR (step=12, gamma=0.5)
+Loss: CrossEntropyLoss (weighted)
+Epochs Trained: 50
+Training Time: 19.29 seconds
+Best Validation Loss: 0.1428
+
+DATA SPLIT:
+-----------
+Training Samples: 6249
+Validation Samples: 1103
+Test Samples: 2947
+
+PERFORMANCE METRICS:
+--------------------
+Best Test Accuracy: 90.40%
+Final Test Accuracy: 91.28%
+Macro F1-Score: 0.9138
+Weighted F1-Score: 0.9126
+Macro Precision: 0.9172
+Macro Recall: 0.9128
+Cohen's Kappa: 0.8952
+Matthews Correlation Coefficient: 0.8957
+
+INFERENCE SPEED:
+----------------
+Avg Batch Time: 1.10 ms
+Avg Sample Time: 0.0086 ms
+Throughput: 116028 samples/sec
+
+PER-CLASS ACCURACY:
+-------------------
+  WALKING: 99.19%
+  WALKING_UPSTAIRS: 92.36%
+  WALKING_DOWNSTAIRS: 93.81%
+  SITTING: 76.37%
+  STANDING: 88.53%
+  LAYING: 97.39%
+
+VISUALIZATIONS GENERATED: 21
+====================================================================== 
+
+
+✅ All results saved to: uci_models/grs_bilstm_uci/test
+📊 Total visualizations generated: 21
+📁 Model size: 0.5267 MB
+🎯 Final Test Accuracy: 91.28%

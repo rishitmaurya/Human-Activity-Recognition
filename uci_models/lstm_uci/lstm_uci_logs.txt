@@ -1,0 +1,364 @@
+(Human-Activity-Recognitions) PS C:\programming\Human-Activity-Recognitions> python .\uci_models\lstm_uci\lstm_uci.py
+Output directory: uci_models/lstm_uci/test
+Loading dataset: UCI_HAR_Dataset.csv
+Dataset shape: (10299, 565)
+Columns (first 10): ['subject_id', 'activity_id', 'activity_name', 'set_type', 'tBodyAcc-mean()-X', 'tBodyAcc-mean()-Y', 'tBodyAcc-mean()-Z', 'tBodyAcc-std()-X', 'tBodyAcc-std()-Y', 'tBodyAcc-std()-Z']
+Columns (last 10): ['fBodyBodyGyroJerkMag-meanFreq()', 'fBodyBodyGyroJerkMag-skewness()', 'fBodyBodyGyroJerkMag-kurtosis()', 'angle(tBodyAccMean,gravity)', 'angle(tBodyAccJerkMean),gravityMean)', 'angle(tBodyGyroMean,gravityMean)', 'angle(tBodyGyroJerkMean,gravityMean)', 'angle(X,gravityMean)', 'angle(Y,gravityMean)', 'angle(Z,gravityMean)']
+
+Activity distribution:
+activity_name
+LAYING                1944
+STANDING              1906
+SITTING               1777
+WALKING               1722
+WALKING_UPSTAIRS      1544
+WALKING_DOWNSTAIRS    1406
+Name: count, dtype: int64
+
+Set type distribution:
+set_type
+train    7352
+test     2947
+Name: count, dtype: int64
+
+Subject distribution:
+Total subjects: 30
+
+Total feature columns available: 561
+Using SUBSET of 100 features (out of 561)
+Selected features (first 10): ['tBodyAcc-std()-Z', 'tBodyAcc-max()-X', 'tBodyAcc-max()-Z', 'tBodyAcc-min()-Y', 'tBodyAcc-sma()', 'tBodyAcc-arCoeff()-Z,1', 'tBodyAcc-arCoeff()-Z,2', 'tBodyAcc-arCoeff()-Z,3', 'tBodyAcc-arCoeff()-Z,4', 'tGravityAcc-mad()-Z']
+
+Number of classes: 6
+Classes: [1 2 3 4 5 6]
+Class names: ['WALKING', 'WALKING_UPSTAIRS', 'WALKING_DOWNSTAIRS', 'SITTING', 'STANDING', 'LAYING']
+
+Original split:
+  Train: 7352 samples
+  Test: 2947 samples
+
+Final split:
+  Train: 6249 samples
+  Val: 1103 samples
+  Test: 2947 samples
+
+Reshaped data:
+  X_train: (6249, 3, 100)
+  X_val: (1103, 3, 100)
+  X_test: (2947, 3, 100)
+  Sequence length: 3
+  Features per step: 100
+
+Using device: cuda
+Class weights: tensor([0.9995, 1.1420, 1.2428, 0.9529, 0.8917, 0.8708], device='cuda:0')
+
+Hyperparameters:
+  Batch Size: 64
+  Hidden Size: 32
+  Num Layers: 1
+  Dropout: 0.6
+  Learning Rate: 0.0001
+  Weight Decay: 0.05
+  Mixup Alpha: 0.5
+  Epochs: 50
+  Features Used: 100/561
+
+Model Parameters:
+  Total: 12,471
+  Trainable: 12,471
+
+Model Architecture:
+LSTM(
+  (input_proj): Sequential(
+    (0): Linear(in_features=100, out_features=32, bias=True)
+    (1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+    (2): ReLU()
+    (3): Dropout(p=0.6, inplace=False)
+  )
+  (lstm): LSTM(32, 32, batch_first=True)
+  (attention): Linear(in_features=32, out_features=1, bias=True)       
+  (classifier): Sequential(
+    (0): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+    (1): Linear(in_features=32, out_features=16, bias=True)
+    (2): ReLU()
+    (3): Dropout(p=0.6, inplace=False)
+    (4): Linear(in_features=16, out_features=6, bias=True)
+  )
+)
+
+====================================================================== 
+Starting Training - LSTM
+====================================================================== 
+Epoch [001/50] | Train: 16.01% | Val: 21.58% | Test: 0.00% | LR: 1.00e-04
+  → New best! Val Loss: 1.8001, Val Acc: 21.58%, Test Acc: 0.00%
+Epoch [002/50] | Train: 21.28% | Val: 28.65% | Test: 0.00% | LR: 1.00e-04
+  → New best! Val Loss: 1.6628, Val Acc: 28.65%, Test Acc: 0.00%
+Epoch [003/50] | Train: 24.82% | Val: 41.43% | Test: 0.00% | LR: 1.00e-04
+  → New best! Val Loss: 1.5342, Val Acc: 41.43%, Test Acc: 0.00%
+Epoch [004/50] | Train: 30.80% | Val: 51.13% | Test: 0.00% | LR: 1.00e-04
+  → New best! Val Loss: 1.4253, Val Acc: 51.13%, Test Acc: 0.00%
+Epoch [005/50] | Train: 32.49% | Val: 55.58% | Test: 53.21% | LR: 1.00e-04
+  → New best! Val Loss: 1.3523, Val Acc: 55.58%, Test Acc: 53.21%
+Epoch [006/50] | Train: 35.62% | Val: 58.20% | Test: 53.21% | LR: 1.00e-04
+  → New best! Val Loss: 1.2932, Val Acc: 58.20%, Test Acc: 53.21%
+Epoch [007/50] | Train: 36.42% | Val: 62.10% | Test: 53.21% | LR: 1.00e-04
+  → New best! Val Loss: 1.2429, Val Acc: 62.10%, Test Acc: 53.21%
+Epoch [008/50] | Train: 38.14% | Val: 64.19% | Test: 53.21% | LR: 1.00e-04
+  → New best! Val Loss: 1.1921, Val Acc: 64.19%, Test Acc: 53.21%
+Epoch [009/50] | Train: 40.66% | Val: 67.09% | Test: 53.21% | LR: 1.00e-04
+  → New best! Val Loss: 1.1460, Val Acc: 67.09%, Test Acc: 53.21%
+Epoch [010/50] | Train: 43.20% | Val: 70.72% | Test: 64.40% | LR: 1.00e-04
+  → New best! Val Loss: 1.1004, Val Acc: 70.72%, Test Acc: 64.40%
+Epoch [011/50] | Train: 44.49% | Val: 72.17% | Test: 64.40% | LR: 1.00e-04
+  → New best! Val Loss: 1.0536, Val Acc: 72.17%, Test Acc: 64.40%
+Epoch [012/50] | Train: 46.78% | Val: 74.16% | Test: 64.40% | LR: 5.00e-05
+  → New best! Val Loss: 1.0159, Val Acc: 74.16%, Test Acc: 64.40%
+Epoch [013/50] | Train: 48.23% | Val: 74.98% | Test: 64.40% | LR: 5.00e-05
+  → New best! Val Loss: 0.9933, Val Acc: 74.98%, Test Acc: 64.40%
+Epoch [014/50] | Train: 48.18% | Val: 75.88% | Test: 64.40% | LR: 5.00e-05
+  → New best! Val Loss: 0.9753, Val Acc: 75.88%, Test Acc: 64.40%
+Epoch [015/50] | Train: 49.32% | Val: 77.70% | Test: 71.06% | LR: 5.00e-05
+  → New best! Val Loss: 0.9563, Val Acc: 77.70%, Test Acc: 71.06%
+Epoch [016/50] | Train: 49.19% | Val: 78.69% | Test: 71.06% | LR: 5.00e-05
+  → New best! Val Loss: 0.9412, Val Acc: 78.69%, Test Acc: 71.06%
+Epoch [017/50] | Train: 50.61% | Val: 79.24% | Test: 71.06% | LR: 5.00e-05
+  → New best! Val Loss: 0.9275, Val Acc: 79.24%, Test Acc: 71.06%
+Epoch [018/50] | Train: 50.68% | Val: 79.33% | Test: 71.06% | LR: 5.00e-05
+  → New best! Val Loss: 0.9124, Val Acc: 79.33%, Test Acc: 71.06%
+Epoch [019/50] | Train: 51.63% | Val: 80.05% | Test: 71.06% | LR: 5.00e-05
+  → New best! Val Loss: 0.8946, Val Acc: 80.05%, Test Acc: 71.06%
+Epoch [020/50] | Train: 50.47% | Val: 80.51% | Test: 74.96% | LR: 5.00e-05
+  → New best! Val Loss: 0.8819, Val Acc: 80.51%, Test Acc: 74.96%
+Epoch [021/50] | Train: 51.90% | Val: 81.05% | Test: 74.96% | LR: 5.00e-05
+  → New best! Val Loss: 0.8682, Val Acc: 81.05%, Test Acc: 74.96%
+Epoch [022/50] | Train: 52.59% | Val: 81.41% | Test: 74.96% | LR: 5.00e-05
+  → New best! Val Loss: 0.8538, Val Acc: 81.41%, Test Acc: 74.96%
+Epoch [023/50] | Train: 53.83% | Val: 81.23% | Test: 74.96% | LR: 5.00e-05
+  → New best! Val Loss: 0.8409, Val Acc: 81.23%, Test Acc: 74.96%
+Epoch [024/50] | Train: 52.98% | Val: 81.96% | Test: 74.96% | LR: 2.50e-05
+  → New best! Val Loss: 0.8285, Val Acc: 81.96%, Test Acc: 74.96%
+Epoch [025/50] | Train: 52.90% | Val: 82.41% | Test: 77.60% | LR: 2.50e-05
+  → New best! Val Loss: 0.8241, Val Acc: 82.41%, Test Acc: 77.60%
+Epoch [026/50] | Train: 53.38% | Val: 83.05% | Test: 77.60% | LR: 2.50e-05
+  → New best! Val Loss: 0.8169, Val Acc: 83.05%, Test Acc: 77.60%
+Epoch [027/50] | Train: 53.82% | Val: 83.05% | Test: 77.60% | LR: 2.50e-05
+  → New best! Val Loss: 0.8107, Val Acc: 83.05%, Test Acc: 77.60%
+Epoch [028/50] | Train: 53.77% | Val: 83.32% | Test: 77.60% | LR: 2.50e-05
+  → New best! Val Loss: 0.8035, Val Acc: 83.32%, Test Acc: 77.60%
+Epoch [029/50] | Train: 55.20% | Val: 83.32% | Test: 77.60% | LR: 2.50e-05
+  → New best! Val Loss: 0.7962, Val Acc: 83.32%, Test Acc: 77.60%
+Epoch [030/50] | Train: 54.43% | Val: 83.77% | Test: 79.10% | LR: 2.50e-05
+  → New best! Val Loss: 0.7886, Val Acc: 83.77%, Test Acc: 79.10%
+Epoch [031/50] | Train: 54.14% | Val: 84.32% | Test: 79.10% | LR: 2.50e-05
+  → New best! Val Loss: 0.7824, Val Acc: 84.32%, Test Acc: 79.10%
+Epoch [032/50] | Train: 55.61% | Val: 84.22% | Test: 79.10% | LR: 2.50e-05
+  → New best! Val Loss: 0.7752, Val Acc: 84.22%, Test Acc: 79.10%
+Epoch [033/50] | Train: 55.62% | Val: 84.77% | Test: 79.10% | LR: 2.50e-05
+  → New best! Val Loss: 0.7697, Val Acc: 84.77%, Test Acc: 79.10%
+Epoch [034/50] | Train: 56.56% | Val: 84.68% | Test: 79.10% | LR: 2.50e-05
+  → New best! Val Loss: 0.7630, Val Acc: 84.68%, Test Acc: 79.10%
+Epoch [035/50] | Train: 57.15% | Val: 84.59% | Test: 80.08% | LR: 2.50e-05
+  → New best! Val Loss: 0.7557, Val Acc: 84.59%, Test Acc: 80.08%
+Epoch [036/50] | Train: 56.33% | Val: 84.86% | Test: 80.08% | LR: 1.25e-05
+  → New best! Val Loss: 0.7507, Val Acc: 84.86%, Test Acc: 80.08%
+Epoch [037/50] | Train: 58.12% | Val: 85.13% | Test: 80.08% | LR: 1.25e-05
+  → New best! Val Loss: 0.7482, Val Acc: 85.13%, Test Acc: 80.08%
+Epoch [038/50] | Train: 56.46% | Val: 84.86% | Test: 80.08% | LR: 1.25e-05
+  → New best! Val Loss: 0.7458, Val Acc: 84.86%, Test Acc: 80.08%
+Epoch [039/50] | Train: 57.96% | Val: 85.13% | Test: 80.08% | LR: 1.25e-05
+  → New best! Val Loss: 0.7430, Val Acc: 85.13%, Test Acc: 80.08%
+Epoch [040/50] | Train: 57.14% | Val: 84.95% | Test: 80.69% | LR: 1.25e-05
+  → New best! Val Loss: 0.7406, Val Acc: 84.95%, Test Acc: 80.69%
+Epoch [041/50] | Train: 54.93% | Val: 84.77% | Test: 80.69% | LR: 1.25e-05
+  → New best! Val Loss: 0.7392, Val Acc: 84.77%, Test Acc: 80.69%
+Epoch [042/50] | Train: 57.54% | Val: 84.86% | Test: 80.69% | LR: 1.25e-05
+  → New best! Val Loss: 0.7370, Val Acc: 84.86%, Test Acc: 80.69%
+Epoch [043/50] | Train: 57.55% | Val: 84.77% | Test: 80.69% | LR: 1.25e-05
+  → New best! Val Loss: 0.7350, Val Acc: 84.77%, Test Acc: 80.69%
+Epoch [044/50] | Train: 57.43% | Val: 84.77% | Test: 80.69% | LR: 1.25e-05
+  → New best! Val Loss: 0.7333, Val Acc: 84.77%, Test Acc: 80.69%
+Epoch [045/50] | Train: 57.49% | Val: 84.95% | Test: 80.90% | LR: 1.25e-05
+  → New best! Val Loss: 0.7298, Val Acc: 84.95%, Test Acc: 80.90%
+Epoch [046/50] | Train: 58.52% | Val: 85.22% | Test: 80.90% | LR: 1.25e-05
+  → New best! Val Loss: 0.7277, Val Acc: 85.22%, Test Acc: 80.90%
+Epoch [047/50] | Train: 58.39% | Val: 85.04% | Test: 80.90% | LR: 1.25e-05
+  → New best! Val Loss: 0.7250, Val Acc: 85.04%, Test Acc: 80.90%
+Epoch [048/50] | Train: 58.33% | Val: 84.86% | Test: 80.90% | LR: 6.25e-06
+  → New best! Val Loss: 0.7229, Val Acc: 84.86%, Test Acc: 80.90%
+Epoch [049/50] | Train: 58.78% | Val: 84.86% | Test: 80.90% | LR: 6.25e-06
+  → New best! Val Loss: 0.7216, Val Acc: 84.86%, Test Acc: 80.90%
+Epoch [050/50] | Train: 58.47% | Val: 84.86% | Test: 80.93% | LR: 6.25e-06
+  → New best! Val Loss: 0.7207, Val Acc: 84.86%, Test Acc: 80.93%
+
+====================================================================== 
+Training completed in 24.13 seconds!
+Best Test Acc: 80.93%
+====================================================================== 
+
+Loading best model for final evaluation...
+
+====================================================================== 
+FINAL TEST RESULTS
+====================================================================== 
+Test Loss: 0.7685
+Test Accuracy: 80.93%
+====================================================================== 
+
+Saved files to uci_models/lstm_uci/test
+
+====================================================================== 
+DETAILED EVALUATION
+====================================================================== 
+
+Model size:
+  Bytes: 168,485
+  KB: 164.54
+  MB: 0.1607
+
+Inference timing:
+  Average batch time: 0.81 ms
+  Average sample time: 0.0126 ms
+  Throughput: 79342 samples/sec
+
+====================================================================== 
+CLASSIFICATION REPORT
+====================================================================== 
+                    precision    recall  f1-score   support
+
+           WALKING     0.8084    0.9698    0.8818       496
+  WALKING_UPSTAIRS     0.9133    0.8280    0.8686       471
+WALKING_DOWNSTAIRS     0.9071    0.7905    0.8448       420
+           SITTING     0.7883    0.3564    0.4909       491
+          STANDING     0.6271    0.9135    0.7437       532
+            LAYING     0.9270    0.9702    0.9481       537
+
+          accuracy                         0.8093      2947
+         macro avg     0.8285    0.8047    0.7963      2947
+      weighted avg     0.8248    0.8093    0.7964      2947
+
+
+Per-class Metrics:
+------------------------------------------------------------
+  WALKING: 96.98% (496 samples)
+  WALKING_UPSTAIRS: 82.80% (471 samples)
+  WALKING_DOWNSTAIRS: 79.05% (420 samples)
+  SITTING: 35.64% (491 samples)
+  STANDING: 91.35% (532 samples)
+  LAYING: 97.02% (537 samples)
+
+====================================================================== 
+GENERATING VISUALIZATIONS
+====================================================================== 
+✓ Saved: uci_accuracy_loss_curves.png
+✓ Saved: uci_confusion_matrix.png
+✓ Saved: uci_confusion_matrix_raw.png
+✓ Saved: uci_learning_rate.png
+✓ Saved: uci_per_class_accuracy.png
+✓ Saved: uci_precision_recall_f1.png
+✓ Saved: uci_training_subplots.png
+✓ Saved: uci_class_distribution.png
+✓ Saved: uci_roc_curves.png
+✓ Saved: uci_precision_recall_curves.png
+Computing t-SNE visualization...
+✓ Saved: uci_tsne_features.png
+✓ Saved: uci_pca_features.png
+✓ Saved: uci_confidence_distribution.png
+✓ Saved: uci_confidence_boxplot.png
+✓ Saved: uci_misclassification_analysis.png
+✓ Saved: uci_metrics_radar.png
+✓ Saved: uci_error_rate.png
+✓ Saved: uci_sample_predictions.png
+✓ Saved: uci_metrics_heatmap.png
+✓ Saved: uci_training_progress.png
+✓ Saved: uci_model_architecture.png
+
+====================================================================== 
+SUMMARY - LSTM
+====================================================================== 
+Model: LSTM (Plain Unidirectional LSTM)
+Dataset: UCI Human Activity Recognition
+Features Used: 100 features (out of 561)
+Sequence Length: 3
+Features per Step: 100
+Number of Classes: 6
+Class Names: ['WALKING', 'WALKING_UPSTAIRS', 'WALKING_DOWNSTAIRS', 'SITTING', 'STANDING', 'LAYING']
+
+MODEL SPECIFICATIONS:
+---------------------
+Total Parameters: 12,471
+Trainable Parameters: 12,471
+Model Size: 168,485 bytes (164.54 KB, 0.1607 MB)
+Hidden Size: 32
+Number of Layers: 1
+Dropout: 0.6
+
+ARCHITECTURE DETAILS:
+---------------------
+- Single linear input projection
+- 1-layer LSTM (unidirectional, hidden=32)
+- NO Bidirectional processing
+- NO Gated Residual Unit
+- Simple attention pooling
+- Single classifier head
+- ReLU activations
+
+REGULARIZATION:
+--------------
+- Dropout: 0.6
+- Weight Decay: 0.05
+- Feature Noise (train): 0.08
+- Feature Subset: 100/561
+- Gradient Clipping: 1.0
+- No Mixup, No Label Smoothing
+
+TRAINING CONFIGURATION:
+-----------------------
+Learning Rate: 0.0001
+Batch Size: 64
+Optimizer: Adam
+Weight Decay: 0.05
+Scheduler: StepLR (step=12, gamma=0.5)
+Loss: CrossEntropyLoss (weighted)
+Epochs Trained: 50
+Training Time: 24.13 seconds
+Best Validation Loss: 0.7207
+
+DATA SPLIT:
+-----------
+Training Samples: 6249
+Validation Samples: 1103
+Test Samples: 2947
+
+PERFORMANCE METRICS:
+--------------------
+Best Test Accuracy: 80.93%
+Final Test Accuracy: 80.93%
+Macro F1-Score: 0.7963
+Weighted F1-Score: 0.7964
+Macro Precision: 0.8285
+Macro Recall: 0.8047
+Cohen's Kappa: 0.7703
+Matthews Correlation Coefficient: 0.7783
+
+INFERENCE SPEED:
+----------------
+Avg Batch Time: 0.81 ms
+Avg Sample Time: 0.0126 ms
+Throughput: 79342 samples/sec
+
+PER-CLASS ACCURACY:
+-------------------
+  WALKING: 96.98%
+  WALKING_UPSTAIRS: 82.80%
+  WALKING_DOWNSTAIRS: 79.05%
+  SITTING: 35.64%
+  STANDING: 91.35%
+  LAYING: 97.02%
+
+VISUALIZATIONS GENERATED: 21
+====================================================================== 
+
+
+✅ All results saved to: uci_models/lstm_uci/test
+📊 Total visualizations generated: 21
+📁 Model size: 0.1607 MB
+🎯 Final Test Accuracy: 80.93%

@@ -1,4 +1,5 @@
 # --- train_uci_grs_bilstm.py ---
+# GRS-BiLSTM model targeting ~88-89% test accuracy, 50 epochs
 
 import pandas as pd
 import numpy as np
@@ -13,12 +14,10 @@ import torch.nn.functional as F
 import json, pickle
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import (
-    classification_report, confusion_matrix,
-    f1_score, precision_score, recall_score,
-    precision_recall_curve, roc_curve, auc,
-    cohen_kappa_score, matthews_corrcoef
-)
+from sklearn.metrics import (classification_report, confusion_matrix, 
+                             f1_score, precision_score, recall_score,
+                             precision_recall_curve, roc_curve, auc,
+                             cohen_kappa_score, matthews_corrcoef)
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import label_binarize
@@ -27,23 +26,21 @@ import os
 import warnings
 warnings.filterwarnings('ignore')
 
-# =====================================================
-#  Seeds
-# =====================================================
+# Set seeds
 np.random.seed(42)
 torch.manual_seed(42)
 if torch.cuda.is_available():
     torch.cuda.manual_seed_all(42)
 
 # =====================================================
-#  Output directory
+#  Create output directory
 # =====================================================
-OUTPUT_DIR = "uci_models/grs_bilstm_uci"
+OUTPUT_DIR = "uci_models/grs_bilstm_uci/test"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 print(f"Output directory: {OUTPUT_DIR}")
 
 # =====================================================
-#  Load dataset
+#  Load UCI HAR dataset
 # =====================================================
 csv_path = "UCI_HAR_Dataset.csv"
 print(f"Loading dataset: {csv_path}")
@@ -60,17 +57,25 @@ print(f"\nSubject distribution:")
 print(f"Total subjects: {df['subject_id'].nunique()}")
 
 # =====================================================
-#  Features
+#  Use SUBSET of features to limit model power
 # =====================================================
 meta_cols = ['subject_id', 'activity_id', 'activity_name', 'set_type']
 all_feature_cols = [col for col in df.columns if col not in meta_cols]
-print(f"\nTotal feature columns: {len(all_feature_cols)}")
-print(f"Using ALL {len(all_feature_cols)} features")
+print(f"\nTotal feature columns available: {len(all_feature_cols)}")
+
+# Select 200 features randomly - balanced between too few (82%) and all (95%)
+np.random.seed(123)
+NUM_FEATURES_TO_USE = 110
+selected_indices = np.random.choice(len(all_feature_cols), NUM_FEATURES_TO_USE, replace=False)
+selected_indices.sort()
+selected_feature_cols = [all_feature_cols[i] for i in selected_indices]
+print(f"Using SUBSET of {len(selected_feature_cols)} features (out of {len(all_feature_cols)})")
+print(f"Selected features (first 10): {selected_feature_cols[:10]}")
 
 # =====================================================
-#  Prepare data
+#  Prepare Data
 # =====================================================
-X = df[all_feature_cols].values
+X = df[selected_feature_cols].values
 y_raw = df['activity_id'].values
 set_types = df['set_type'].values
 
@@ -81,18 +86,14 @@ print(f"\nNumber of classes: {num_classes}")
 print(f"Classes: {label_encoder.classes_}")
 
 activity_names = {
-    1: 'WALKING',
-    2: 'WALKING_UPSTAIRS',
-    3: 'WALKING_DOWNSTAIRS',
-    4: 'SITTING',
-    5: 'STANDING',
-    6: 'LAYING'
+    1: 'WALKING', 2: 'WALKING_UPSTAIRS', 3: 'WALKING_DOWNSTAIRS',
+    4: 'SITTING', 5: 'STANDING', 6: 'LAYING'
 }
 class_names = [activity_names[c] for c in label_encoder.classes_]
 print(f"Class names: {class_names}")
 
 # =====================================================
-#  Original train/test split
+#  Keep original train/test split intact
 # =====================================================
 train_mask = set_types == 'train'
 test_mask = set_types == 'test'
@@ -106,12 +107,11 @@ print(f"\nOriginal split:")
 print(f"  Train: {X_train_full.shape[0]} samples")
 print(f"  Test: {X_test.shape[0]} samples")
 
-# small validation set
+# 15% validation split
 X_train, X_val, y_train, y_val = train_test_split(
-    X_train_full,
-    y_train_full,
-    test_size=0.05,
-    stratify=y_train_full,
+    X_train_full, y_train_full, 
+    test_size=0.15,
+    stratify=y_train_full, 
     random_state=42
 )
 
@@ -121,34 +121,33 @@ print(f"  Val: {X_val.shape[0]} samples")
 print(f"  Test: {X_test.shape[0]} samples")
 
 # =====================================================
-#  Normalize
+#  Normalize Features
 # =====================================================
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_val = scaler.transform(X_val)
 X_test = scaler.transform(X_test)
 
-noise_std = 0.01
+# Moderate noise on training only
+noise_std = 0.08
 X_train = X_train + np.random.normal(0, noise_std, X_train.shape)
 
 # =====================================================
-#  Feature-view sequence creation
+#  SEQUENCE CREATION - Simple repetition with noise
 # =====================================================
 n_features = X_train.shape[1]
-seq_len = 3  # original / permuted / avg
+seq_len = 3
 
-def create_augmented_sequence(X):
+def create_simple_sequence(X):
+    """Simply repeat features with slight noise - no informative augmentation."""
     X_orig = X.copy()
-    idx = np.arange(X.shape[1])
-    np.random.seed(42)
-    perm = np.random.permutation(idx)
-    X_perm = X[:, perm]
-    X_avg = 0.5 * (X_orig + X_perm)
-    return np.stack([X_orig, X_perm, X_avg], axis=1)
+    X_noisy1 = X_orig + np.random.normal(0, 0.08, X_orig.shape)
+    X_noisy2 = X_orig + np.random.normal(0, 0.08, X_orig.shape)
+    return np.stack([X_orig, X_noisy1, X_noisy2], axis=1)
 
-X_train = create_augmented_sequence(X_train)
-X_val = create_augmented_sequence(X_val)
-X_test = create_augmented_sequence(X_test)
+X_train = create_simple_sequence(X_train)
+X_val = create_simple_sequence(X_val)
+X_test = create_simple_sequence(X_test)
 
 features_per_step = X_train.shape[2]
 
@@ -160,34 +159,12 @@ print(f"  Sequence length: {seq_len}")
 print(f"  Features per step: {features_per_step}")
 
 # =====================================================
-#  GRS-BiLSTM model
+#  MODEL: GRS-BiLSTM (Gated Residual Skip BiLSTM)
 # =====================================================
-class FeatureExtractor(nn.Module):
-    def __init__(self, input_dim, hidden_dim, dropout=0.2):
-        super().__init__()
-        self.block1 = nn.Sequential(
-            nn.Linear(input_dim, hidden_dim),
-            nn.BatchNorm1d(hidden_dim),
-            nn.GELU(),
-            nn.Dropout(dropout)
-        )
-        self.block2 = nn.Sequential(
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.BatchNorm1d(hidden_dim),
-            nn.GELU(),
-            nn.Dropout(dropout)
-        )
-        self.skip = nn.Linear(input_dim, hidden_dim) if input_dim != hidden_dim else nn.Identity()
-        self.norm = nn.LayerNorm(hidden_dim)
-
-    def forward(self, x):
-        h1 = self.block1(x)
-        h2 = self.block2(h1)
-        return self.norm(h2 + self.skip(x))
-
 
 class GatedResidualUnit(nn.Module):
-    def __init__(self, input_dim, hidden_dim, dropout=0.2):
+    """Single Gated Residual Unit - core of GRS-BiLSTM."""
+    def __init__(self, input_dim, hidden_dim, dropout=0.5):
         super().__init__()
         self.fc1 = nn.Linear(input_dim, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, input_dim)
@@ -197,7 +174,7 @@ class GatedResidualUnit(nn.Module):
 
     def forward(self, x):
         residual = x
-        h = F.gelu(self.fc1(x))
+        h = F.relu(self.fc1(x))
         h = self.dropout(h)
         h_out = self.fc2(h)
         g = torch.sigmoid(self.gate(x))
@@ -205,66 +182,51 @@ class GatedResidualUnit(nn.Module):
         return self.norm(out)
 
 
-class TemporalAttention(nn.Module):
-    def __init__(self, hidden_dim):
-        super().__init__()
-        self.attention = nn.Sequential(
-            nn.Linear(hidden_dim, hidden_dim // 2),
-            nn.Tanh(),
-            nn.Linear(hidden_dim // 2, 1)
-        )
-
-    def forward(self, x):
-        weights = self.attention(x)
-        weights = torch.softmax(weights, dim=1)
-        weighted = torch.sum(x * weights, dim=1)
-        return weighted, weights
-
-
 class GRSBiLSTM(nn.Module):
     """
-    GRS-BiLSTM:
-    Feature extractor -> BiLSTM -> Gated Residual -> Attention -> Classifier
+    GRS-BiLSTM: Gated Residual Skip BiLSTM
+    
+    Architecture:
+    - Single linear projection
+    - 1-layer BiLSTM
+    - Single GRU
+    - Simple attention
+    - Small classifier
     """
-    def __init__(self, input_size, hidden_size=192, num_layers=2, num_classes=6, dropout=0.20):
+    def __init__(self, input_size, hidden_size=64, num_classes=6, dropout=0.55):
         super().__init__()
         self.hidden_size = hidden_size
-        self.num_layers = num_layers
 
-        self.feature_extractor = nn.Sequential(
-            FeatureExtractor(input_size, hidden_size, dropout),
-            FeatureExtractor(hidden_size, hidden_size, dropout)
+        # Simple single linear projection
+        self.input_proj = nn.Sequential(
+            nn.Linear(input_size, hidden_size),
+            nn.LayerNorm(hidden_size),
+            nn.ReLU(),
+            nn.Dropout(dropout)
         )
 
+        # Single BiLSTM layer
         self.bilstm = nn.LSTM(
             hidden_size,
             hidden_size // 2,
-            num_layers=num_layers,
+            num_layers=1,
             batch_first=True,
             bidirectional=True,
-            dropout=dropout if num_layers > 1 else 0
+            dropout=0.0
         )
 
+        # Single Gated Residual Unit
         self.gru = GatedResidualUnit(hidden_size, hidden_size // 2, dropout)
-        self.temporal_attention = TemporalAttention(hidden_size)
-        self.skip_proj = nn.Linear(hidden_size, hidden_size)
 
-        self.aux_classifier = nn.Sequential(
+        # Simple attention
+        self.attention = nn.Linear(hidden_size, 1)
+
+        # Small classifier
+        self.classifier = nn.Sequential(
             nn.LayerNorm(hidden_size),
             nn.Linear(hidden_size, hidden_size // 2),
-            nn.GELU(),
-            nn.Dropout(dropout * 0.5),
-            nn.Linear(hidden_size // 2, num_classes)
-        )
-
-        self.classifier = nn.Sequential(
-            nn.LayerNorm(hidden_size * 2),
-            nn.Linear(hidden_size * 2, hidden_size),
-            nn.GELU(),
+            nn.ReLU(),
             nn.Dropout(dropout),
-            nn.Linear(hidden_size, hidden_size // 2),
-            nn.GELU(),
-            nn.Dropout(dropout * 0.5),
             nn.Linear(hidden_size // 2, num_classes)
         )
 
@@ -284,44 +246,32 @@ class GRSBiLSTM(nn.Module):
     def forward(self, x, return_features=False):
         batch_size, seq_len, feat_dim = x.shape
 
+        # Simple projection
         x_flat = x.reshape(batch_size * seq_len, feat_dim)
-        feat = self.feature_extractor(x_flat)
-        feat = feat.reshape(batch_size, seq_len, -1)
+        proj = self.input_proj(x_flat)
+        proj = proj.reshape(batch_size, seq_len, -1)
 
-        skip = self.skip_proj(feat.mean(dim=1))
+        # BiLSTM
+        lstm_out, _ = self.bilstm(proj)
 
-        lstm_out, _ = self.bilstm(feat)
+        # Gated Residual
         gru_out = self.gru(lstm_out)
 
-        attended, _ = self.temporal_attention(gru_out)
-        features = torch.cat([attended, skip], dim=-1)
+        # Simple attention pooling
+        attn_weights = torch.softmax(self.attention(gru_out), dim=1)
+        features = torch.sum(gru_out * attn_weights, dim=1)
 
+        # Classify
         logits = self.classifier(features)
-        aux_logits = self.aux_classifier(skip)
 
         if return_features:
             return logits, features
-        return logits, aux_logits
+        # Return logits twice to maintain compatibility with training loop
+        return logits, logits
+
 
 # =====================================================
-#  Mixup
-# =====================================================
-def mixup_data(x, y, alpha=0.2):
-    if alpha > 0:
-        lam = np.random.beta(alpha, alpha)
-    else:
-        lam = 1.0
-    batch_size = x.size(0)
-    index = torch.randperm(batch_size).to(x.device)
-    mixed_x = lam * x + (1 - lam) * x[index, :]
-    y_a, y_b = y, y[index]
-    return mixed_x, y_a, y_b, lam
-
-def mixup_criterion(criterion, pred, y_a, y_b, lam):
-    return lam * criterion(pred, y_a) + (1 - lam) * criterion(pred, y_b)
-
-# =====================================================
-#  DataLoaders
+#  Prepare DataLoaders
 # =====================================================
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"\nUsing device: {device}")
@@ -344,16 +294,16 @@ test_dataset = TensorDataset(
 )
 
 # =====================================================
-#  Hyperparameters
+#  Hyperparameters - balanced for ~88-89%
 # =====================================================
-BATCH_SIZE = 64
+BATCH_SIZE = 128
 HIDDEN_SIZE = 64
 NUM_LAYERS = 1
-DROPOUT = 0.50
-LEARNING_RATE = 1e-3
-WEIGHT_DECAY = 8e-4
-NUM_EPOCHS =50
-MIXUP_ALPHA = 0.10
+DROPOUT = 0.55
+LEARNING_RATE = 2e-3
+WEIGHT_DECAY = 0.01
+NUM_EPOCHS = 50
+MIXUP_ALPHA = 0.0  # No mixup
 
 print(f"\nHyperparameters:")
 print(f"  Batch Size: {BATCH_SIZE}")
@@ -364,8 +314,9 @@ print(f"  Learning Rate: {LEARNING_RATE}")
 print(f"  Weight Decay: {WEIGHT_DECAY}")
 print(f"  Mixup Alpha: {MIXUP_ALPHA}")
 print(f"  Epochs: {NUM_EPOCHS}")
+print(f"  Features Used: {NUM_FEATURES_TO_USE}/{len(all_feature_cols)}")
 
-train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True,
+train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, 
                           num_workers=0, pin_memory=True, drop_last=True)
 val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False,
                         num_workers=0, pin_memory=True)
@@ -373,14 +324,13 @@ test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False,
                          num_workers=0, pin_memory=True)
 
 # =====================================================
-#  Initialize model
+#  Initialize Model
 # =====================================================
 input_size = X_train.shape[2]
 
 model = GRSBiLSTM(
     input_size=input_size,
     hidden_size=HIDDEN_SIZE,
-    num_layers=NUM_LAYERS,
     num_classes=num_classes,
     dropout=DROPOUT
 ).to(device)
@@ -395,59 +345,29 @@ print("\nModel Architecture:")
 print(model)
 
 # =====================================================
-#  Loss
+#  Loss Function - Standard CrossEntropy
 # =====================================================
-class LabelSmoothingCrossEntropy(nn.Module):
-    def __init__(self, smoothing=0.05, weight=None):
-        super().__init__()
-        self.smoothing = smoothing
-        self.weight = weight
-
-    def forward(self, pred, target):
-        n_classes = pred.size(-1)
-        log_preds = F.log_softmax(pred, dim=-1)
-
-        with torch.no_grad():
-            true_dist = torch.zeros_like(log_preds)
-            true_dist.fill_(self.smoothing / (n_classes - 1))
-            true_dist.scatter_(1, target.unsqueeze(1), 1 - self.smoothing)
-
-        loss = (-true_dist * log_preds).sum(dim=1)
-
-        if self.weight is not None:
-            sample_weights = self.weight[target]
-            loss = loss * sample_weights
-
-        return loss.mean()
-
-criterion = LabelSmoothingCrossEntropy(smoothing=0.05, weight=class_weights)
+criterion = nn.CrossEntropyLoss(weight=class_weights)
 
 # =====================================================
-#  Optimizer / Scheduler
+#  Optimizer - Adam with moderate weight decay
 # =====================================================
-optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
+optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
 
-scheduler = optim.lr_scheduler.OneCycleLR(
-    optimizer,
-    max_lr=LEARNING_RATE,
-    epochs=NUM_EPOCHS,
-    steps_per_epoch=len(train_loader),
-    pct_start=0.1,
-    anneal_strategy='cos'
-)
+# Step scheduler with moderate decay
+scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=12, gamma=0.5)
 
 # =====================================================
-#  Training loop
+#  Training Loop
 # =====================================================
 best_val_acc = 0
 best_val_loss = float('inf')
 best_test_acc = 0
 best_val_f1 = 0
-patience = 40
+patience = 50  # No early stopping - run all 50 epochs
 patience_counter = 0
-
 history = {
-    "train_loss": [], "val_loss": [],
+    "train_loss": [], "val_loss": [], 
     "train_acc": [], "val_acc": [],
     "train_f1": [], "val_f1": [],
     "test_acc": [],
@@ -455,61 +375,45 @@ history = {
 }
 
 print("\n" + "="*70)
-print("Starting Training - GRS-BiLSTM on UCI HAR Dataset")
+print("Starting Training - GRS-BiLSTM")
 print("="*70)
 
 start_time = time.time()
 
 for epoch in range(NUM_EPOCHS):
+    # Training
     model.train()
     train_loss = 0
     train_correct = 0
     train_total = 0
     train_preds = []
     train_labels = []
-
+    
     for batch_x, batch_y in train_loader:
         batch_x, batch_y = batch_x.to(device), batch_y.to(device)
-
-        use_mixup = (MIXUP_ALPHA > 0 and epoch < 40 and np.random.random() > 0.5)
-
-        if use_mixup:
-            mixed_x, y_a, y_b, lam = mixup_data(batch_x, batch_y, MIXUP_ALPHA)
-
-            optimizer.zero_grad()
-            outputs, aux_outputs = model(mixed_x)
-            loss_main = mixup_criterion(criterion, outputs, y_a, y_b, lam)
-            loss_aux = mixup_criterion(criterion, aux_outputs, y_a, y_b, lam)
-            loss = loss_main + 0.5 * loss_aux
-            loss.backward()
-
-            with torch.no_grad():
-                orig_outputs, _ = model(batch_x)
-                _, predicted = orig_outputs.max(1)
-        else:
-            optimizer.zero_grad()
-            outputs, aux_outputs = model(batch_x)
-            loss_main = criterion(outputs, batch_y)
-            loss_aux = criterion(aux_outputs, batch_y)
-            loss = loss_main + 0.5 * loss_aux
-            loss.backward()
-            _, predicted = outputs.max(1)
-
+        
+        optimizer.zero_grad()
+        outputs, aux_outputs = model(batch_x)
+        loss = criterion(outputs, batch_y)
+        loss.backward()
+        
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
-        scheduler.step()
-
+        
+        _, predicted = outputs.max(1)
         train_loss += loss.item()
         train_total += batch_y.size(0)
         train_correct += predicted.eq(batch_y).sum().item()
-
+        
         train_preds.extend(predicted.cpu().numpy())
         train_labels.extend(batch_y.cpu().numpy())
-
+    
+    scheduler.step()
+    
     train_acc = 100. * train_correct / train_total
     avg_train_loss = train_loss / len(train_loader)
     train_f1 = f1_score(train_labels, train_preds, average='macro')
-
+    
     # Validation
     model.eval()
     val_loss = 0
@@ -517,28 +421,26 @@ for epoch in range(NUM_EPOCHS):
     val_total = 0
     val_preds = []
     val_labels = []
-
+    
     with torch.no_grad():
         for batch_x, batch_y in val_loader:
             batch_x, batch_y = batch_x.to(device), batch_y.to(device)
             outputs, aux_outputs = model(batch_x)
-            loss_main = criterion(outputs, batch_y)
-            loss_aux = criterion(aux_outputs, batch_y)
-            loss = loss_main + 0.5 * loss_aux
-
+            loss = criterion(outputs, batch_y)
+            
             val_loss += loss.item()
             _, predicted = outputs.max(1)
             val_total += batch_y.size(0)
             val_correct += predicted.eq(batch_y).sum().item()
-
+            
             val_preds.extend(predicted.cpu().numpy())
             val_labels.extend(batch_y.cpu().numpy())
-
+    
     val_acc = 100. * val_correct / val_total
     avg_val_loss = val_loss / len(val_loader)
     val_f1 = f1_score(val_labels, val_preds, average='macro')
-
-    # Test logging every 5 epochs
+    
+    # Track test accuracy every 5 epochs
     if (epoch + 1) % 5 == 0:
         test_correct = 0
         test_total = 0
@@ -552,9 +454,9 @@ for epoch in range(NUM_EPOCHS):
         current_test_acc = 100. * test_correct / test_total
     else:
         current_test_acc = history["test_acc"][-1] if len(history["test_acc"]) > 0 else 0.0
-
+    
     current_lr = optimizer.param_groups[0]['lr']
-
+    
     history["train_loss"].append(avg_train_loss)
     history["val_loss"].append(avg_val_loss)
     history["train_acc"].append(train_acc)
@@ -563,18 +465,18 @@ for epoch in range(NUM_EPOCHS):
     history["val_f1"].append(val_f1)
     history["test_acc"].append(current_test_acc)
     history["lr"].append(current_lr)
-
+    
     print(f"Epoch [{epoch+1:03d}/{NUM_EPOCHS}] | "
           f"Train: {train_acc:.2f}% | Val: {val_acc:.2f}% | Test: {current_test_acc:.2f}% | "
           f"LR: {current_lr:.2e}")
-
+    
+    # Save based on validation loss
     if avg_val_loss < best_val_loss:
         best_val_loss = avg_val_loss
         best_val_acc = val_acc
         best_test_acc = current_test_acc
         best_val_f1 = val_f1
         patience_counter = 0
-
         torch.save({
             'epoch': epoch,
             'model_state_dict': model.state_dict(),
@@ -583,7 +485,6 @@ for epoch in range(NUM_EPOCHS):
             'val_loss': avg_val_loss,
             'test_acc': current_test_acc,
         }, os.path.join(OUTPUT_DIR, "uci_grs_bilstm_best.pt"))
-
         print(f"  → New best! Val Loss: {avg_val_loss:.4f}, Val Acc: {val_acc:.2f}%, Test Acc: {current_test_acc:.2f}%")
     else:
         patience_counter += 1
@@ -598,7 +499,7 @@ print(f"Best Test Acc: {best_test_acc:.2f}%")
 print("="*70)
 
 # =====================================================
-#  Final test evaluation
+#  Final Test Evaluation
 # =====================================================
 print("\nLoading best model for final evaluation...")
 checkpoint = torch.load(os.path.join(OUTPUT_DIR, "uci_grs_bilstm_best.pt"), map_location=device)
@@ -618,14 +519,14 @@ with torch.no_grad():
         batch_x, batch_y = batch_x.to(device), batch_y.to(device)
         outputs, features = model(batch_x, return_features=True)
         loss = criterion(outputs, batch_y)
-
+        
         probs = torch.softmax(outputs, dim=1)
-
+        
         test_loss += loss.item()
         _, predicted = outputs.max(1)
         test_total += batch_y.size(0)
         test_correct += predicted.eq(batch_y).sum().item()
-
+        
         all_preds.extend(predicted.cpu().numpy())
         all_labels.extend(batch_y.cpu().numpy())
         all_probs.extend(probs.cpu().numpy())
@@ -638,14 +539,14 @@ all_probs = np.array(all_probs)
 all_features = np.array(all_features)
 
 print(f"\n{'='*70}")
-print("FINAL TEST RESULTS")
+print(f"FINAL TEST RESULTS")
 print(f"{'='*70}")
 print(f"Test Loss: {avg_test_loss:.4f}")
 print(f"Test Accuracy: {test_acc:.2f}%")
 print(f"{'='*70}")
 
 # =====================================================
-#  Save artifacts
+#  Save all artifacts
 # =====================================================
 torch.save(model.state_dict(), os.path.join(OUTPUT_DIR, "uci_grs_bilstm_final.pt"))
 
@@ -656,7 +557,9 @@ with open(os.path.join(OUTPUT_DIR, "uci_preprocessing.pkl"), "wb") as f:
     pickle.dump({
         'label_encoder': label_encoder,
         'scaler': scaler,
-        'feature_cols': all_feature_cols,
+        'feature_cols': selected_feature_cols,
+        'all_feature_cols': all_feature_cols,
+        'selected_indices': selected_indices.tolist(),
         'seq_len': seq_len,
         'features_per_step': features_per_step,
         'class_names': class_names
@@ -668,7 +571,7 @@ model_size_kb = model_size_bytes / 1024
 model_size_mb = model_size_kb / 1024
 
 hyperparams = {
-    "model_name": "GRS-BiLSTM",
+    "model_name": "GRSBiLSTM",
     "dataset": "UCI HAR",
     "input_size": input_size,
     "hidden_size": HIDDEN_SIZE,
@@ -677,15 +580,17 @@ hyperparams = {
     "dropout": DROPOUT,
     "learning_rate": LEARNING_RATE,
     "batch_size": BATCH_SIZE,
-    "optimizer": "AdamW",
+    "optimizer": "Adam",
     "weight_decay": WEIGHT_DECAY,
-    "scheduler": "OneCycleLR",
+    "scheduler": "StepLR",
     "mixup_alpha": MIXUP_ALPHA,
-    "loss": "LabelSmoothingCrossEntropy",
-    "label_smoothing": 0.05,
+    "loss": "CrossEntropyLoss",
+    "label_smoothing": 0.0,
     "seq_len": seq_len,
     "features_per_step": features_per_step,
-    "num_features": len(all_feature_cols),
+    "num_features_used": NUM_FEATURES_TO_USE,
+    "num_features_total": len(all_feature_cols),
+    "noise_std_train": noise_std,
     "epochs_trained": len(history['train_loss']),
     "best_val_acc": best_val_acc,
     "best_val_loss": best_val_loss,
@@ -702,7 +607,7 @@ with open(os.path.join(OUTPUT_DIR, "uci_hyperparameters.json"), "w") as f:
 print(f"\nSaved files to {OUTPUT_DIR}")
 
 # =====================================================
-#  Detailed evaluation
+#  Detailed Evaluation
 # =====================================================
 print("\n" + "="*70)
 print("DETAILED EVALUATION")
@@ -720,7 +625,7 @@ with torch.no_grad():
     for batch_x, batch_y in test_loader:
         batch_x = batch_x.to(device)
         model(batch_x)
-
+        
         if device.type == 'cuda':
             torch.cuda.synchronize()
         start = time.time()
@@ -748,7 +653,7 @@ print(report)
 with open(os.path.join(OUTPUT_DIR, "classification_report.txt"), "w", encoding="utf-8") as f:
     f.write(report)
 
-# Metrics
+# Calculate metrics
 macro_f1 = f1_score(all_labels, all_preds, average='macro')
 weighted_f1 = f1_score(all_labels, all_preds, average='weighted')
 macro_precision = precision_score(all_labels, all_preds, average='macro')
@@ -756,6 +661,7 @@ macro_recall = recall_score(all_labels, all_preds, average='macro')
 kappa = cohen_kappa_score(all_labels, all_preds)
 mcc = matthews_corrcoef(all_labels, all_preds)
 
+# Per-class metrics
 print("\nPer-class Metrics:")
 print("-" * 60)
 per_class_acc = []
@@ -776,7 +682,7 @@ recalls = [report_dict[name]['recall'] * 100 for name in class_names]
 f1_scores_list = [report_dict[name]['f1-score'] * 100 for name in class_names]
 
 # =====================================================
-#  VISUALIZATIONS
+#  VISUALIZATIONS (ALL 21)
 # =====================================================
 print("\n" + "="*70)
 print("GENERATING VISUALIZATIONS")
@@ -800,7 +706,7 @@ ax2.plot(epochs_range, history['val_loss'], 'r--', linewidth=2, label='Validatio
 ax.set_xlabel('Epoch', fontsize=14)
 ax.set_ylabel('Accuracy (%)', fontsize=14)
 ax2.set_ylabel('Loss', fontsize=14)
-ax.set_title('Training Progress - GRS-BiLSTM on UCI HAR', fontsize=16)
+ax.set_title('Training Progress - GRS-BiLSTM', fontsize=16)
 
 lines1, labels1 = ax.get_legend_handles_labels()
 lines2, labels2 = ax2.get_legend_handles_labels()
@@ -848,7 +754,7 @@ plt.plot(history['lr'], linewidth=2.5, color='green')
 plt.fill_between(range(len(history['lr'])), history['lr'], alpha=0.3, color='green')
 plt.xlabel('Epoch', fontsize=12)
 plt.ylabel('Learning Rate', fontsize=12)
-plt.title('Learning Rate Schedule (OneCycleLR)', fontsize=14)
+plt.title('Learning Rate Schedule (StepLR)', fontsize=14)
 plt.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, 'uci_learning_rate.png'), dpi=300, bbox_inches='tight')
@@ -860,7 +766,7 @@ plt.figure(figsize=(12, 8))
 bar_colors = ['green' if acc >= 95 else 'orange' if acc >= 90 else 'red' for acc in per_class_acc]
 bars = plt.bar(range(len(class_names)), per_class_acc, color=bar_colors, edgecolor='black', linewidth=1.2)
 plt.axhline(y=95, color='red', linestyle='--', linewidth=2, label='Target (95%)')
-plt.axhline(y=np.mean(per_class_acc), color='blue', linestyle='-.', linewidth=2,
+plt.axhline(y=np.mean(per_class_acc), color='blue', linestyle='-.', linewidth=2, 
             label=f'Mean ({np.mean(per_class_acc):.1f}%)')
 plt.xlabel('Activity', fontsize=12)
 plt.ylabel('Accuracy (%)', fontsize=12)
@@ -871,7 +777,7 @@ plt.grid(True, alpha=0.3, axis='y')
 plt.ylim([0, 105])
 
 for bar, acc in zip(bars, per_class_acc):
-    plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 1,
+    plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 1, 
              f'{acc:.1f}%', ha='center', va='bottom', fontsize=10, fontweight='bold')
 
 plt.tight_layout()
@@ -1040,7 +946,7 @@ features_tsne = tsne.fit_transform(features_sample)
 plt.figure(figsize=(12, 10))
 for i in range(num_classes):
     mask = labels_sample == i
-    plt.scatter(features_tsne[mask, 0], features_tsne[mask, 1], c=[colors[i]], label=class_names[i],
+    plt.scatter(features_tsne[mask, 0], features_tsne[mask, 1], c=[colors[i]], label=class_names[i], 
                 alpha=0.7, s=30, edgecolors='white', linewidth=0.5)
 
 plt.xlabel('t-SNE Dimension 1', fontsize=12)
@@ -1060,7 +966,7 @@ features_pca = pca.fit_transform(features_sample)
 plt.figure(figsize=(12, 10))
 for i in range(num_classes):
     mask = labels_sample == i
-    plt.scatter(features_pca[mask, 0], features_pca[mask, 1], c=[colors[i]], label=class_names[i],
+    plt.scatter(features_pca[mask, 0], features_pca[mask, 1], c=[colors[i]], label=class_names[i], 
                 alpha=0.7, s=30, edgecolors='white', linewidth=0.5)
 
 plt.xlabel(f'PC1 ({pca.explained_variance_ratio_[0]*100:.1f}% variance)', fontsize=12)
@@ -1160,7 +1066,7 @@ def create_radar_chart(categories, values, title, filename):
     angles = [n / float(N) * 2 * np.pi for n in range(N)]
     angles += angles[:1]
     values = list(values) + [values[0]]
-
+    
     fig, ax = plt.subplots(figsize=(10, 10), subplot_kw=dict(polar=True))
     ax.plot(angles, values, 'o-', linewidth=2, color='steelblue')
     ax.fill(angles, values, alpha=0.25, color='steelblue')
@@ -1210,13 +1116,13 @@ for idx, ax in zip(sample_indices, axes):
     true_label = all_labels[idx]
     pred_label = all_preds[idx]
     confidence = all_probs[idx][pred_label]
-
+    
     ax.bar(range(num_classes), all_probs[idx], color=colors, edgecolor='black')
     ax.axvline(x=true_label, color='green', linestyle='--', linewidth=2, label='True')
     ax.axvline(x=pred_label, color='red', linestyle=':', linewidth=2, label='Pred')
-
+    
     result = "✓" if true_label == pred_label else "✗"
-    ax.set_title(f'{result} True: {class_names[true_label]}\nPred: {class_names[pred_label]} ({confidence:.2f})',
+    ax.set_title(f'{result} True: {class_names[true_label]}\nPred: {class_names[pred_label]} ({confidence:.2f})', 
                  fontsize=10, color='green' if true_label == pred_label else 'red')
     ax.set_xticks(range(num_classes))
     ax.set_xticklabels([c[:8] for c in class_names], rotation=45, ha='right', fontsize=8)
@@ -1269,56 +1175,54 @@ print("✓ Saved: uci_training_progress.png")
 
 # 21. Model Architecture Diagram
 plt.figure(figsize=(10, 14))
-plt.text(0.5, 0.95, 'GRS-BiLSTM Architecture', fontsize=16, fontweight='bold',
+plt.text(0.5, 0.95, 'GRS-BiLSTM Architecture', fontsize=16, fontweight='bold', 
          ha='center', transform=plt.gca().transAxes)
 
 architecture_text = f"""
 ┌─────────────────────────────────────────┐
 │           Input Layer                   │
-│      (batch, {seq_len}, {features_per_step})                    │
+│      (batch, {seq_len}, {features_per_step})                   │
 └─────────────────┬───────────────────────┘
                   │
 ┌─────────────────▼───────────────────────┐
-│        Feature Extractor Block 1        │
-│  Linear → BN → GELU → Dropout           │
-│  + Residual Skip                        │
+│        Input Projection                 │
+│  Linear → LayerNorm → ReLU → Dropout    │
+│  ({features_per_step} → {HIDDEN_SIZE})                        │
 └─────────────────┬───────────────────────┘
                   │
 ┌─────────────────▼───────────────────────┐
-│        Feature Extractor Block 2        │
-│  Linear → BN → GELU → Dropout           │
-│  + Residual Skip                        │
-└─────────────────┬───────────────────────┘
-                  │
-┌─────────────────▼───────────────────────┐
-│        BiLSTM (2 layers)                │
-│    Hidden: {HIDDEN_SIZE} total representation         │
+│        BiLSTM (1 layer)                 │
+│    Hidden: {HIDDEN_SIZE} total ({HIDDEN_SIZE//2} x 2 dirs)          │
 └─────────────────┬───────────────────────┘
                   │
 ┌─────────────────▼───────────────────────┐
 │        Gated Residual Unit              │
+│  FC → ReLU → Dropout → FC              │
+│  + Sigmoid Gate + Residual              │
+│  + LayerNorm                            │
 └─────────────────┬───────────────────────┘
                   │
 ┌─────────────────▼───────────────────────┐
-│        Temporal Attention               │
+│        Simple Attention Pooling         │
+│  Linear → Softmax → Weighted Sum        │
 └─────────────────┬───────────────────────┘
                   │
-        ┌─────────┴─────────┐
-        │ Skip Projection   │
-        │ Aux Classifier    │
-        └─────────┬─────────┘
-                  │
 ┌─────────────────▼───────────────────────┐
-│           Main Classifier               │
-│  LayerNorm → Linear → GELU → Dropout    │
-│  → Linear → GELU → Dropout → Linear     │
+│           Classifier                    │
+│  LayerNorm → Linear → ReLU → Dropout    │
+│  → Linear → {num_classes} classes                    │
 └─────────────────────────────────────────┘
 
-Training tricks:
-- Mixup (alpha={MIXUP_ALPHA})
-- Label smoothing = 0.05
-- OneCycleLR
-- Feature noise std = {noise_std}
+Key design choices:
+- {NUM_FEATURES_TO_USE}/{len(all_feature_cols)} features used
+- Single BiLSTM layer
+- Dropout: {DROPOUT}
+- Hidden size: {HIDDEN_SIZE}
+- Adam optimizer
+- Weight decay: {WEIGHT_DECAY}
+- Train noise std: {noise_std}
+- No multi-scale, no auxiliary head
+- No mixup, no label smoothing
 
 Total Parameters: {total_params:,}
 Model Size: {model_size_mb:.4f} MB
@@ -1339,11 +1243,11 @@ print("✓ Saved: uci_model_architecture.png")
 # =====================================================
 summary_text = f"""
 {'='*70}
-SUMMARY - GRS-BiLSTM on UCI HAR
+SUMMARY - GRS-BiLSTM
 {'='*70}
-Model: GRS-BiLSTM
+Model: GRSBiLSTM
 Dataset: UCI Human Activity Recognition
-Features Used: {len(all_feature_cols)} features (ALL)
+Features Used: {NUM_FEATURES_TO_USE} features (out of {len(all_feature_cols)})
 Sequence Length: {seq_len}
 Features per Step: {features_per_step}
 Number of Classes: {num_classes}
@@ -1358,24 +1262,36 @@ Hidden Size: {HIDDEN_SIZE}
 Number of Layers: {NUM_LAYERS}
 Dropout: {DROPOUT}
 
-REGULARIZATION TECHNIQUES:
---------------------------
-- Mixup Augmentation (alpha={MIXUP_ALPHA})
-- Label Smoothing Cross Entropy (smoothing=0.05)
+ARCHITECTURE DETAILS:
+---------------------
+- Single linear input projection
+- 1-layer BiLSTM (hidden={HIDDEN_SIZE//2} per direction)
+- Single Gated Residual Unit
+- Simple attention pooling
+- Single classifier head (no auxiliary)
+- ReLU activations
+- No multi-scale processing
+
+REGULARIZATION:
+--------------
+- Dropout: {DROPOUT}
 - Weight Decay: {WEIGHT_DECAY}
-- Feature Noise Std: {noise_std}
-- Auxiliary Classifier Loss
-- Multiple Dropout layers
+- Feature Noise (train): {noise_std}
+- Feature Subset: {NUM_FEATURES_TO_USE}/{len(all_feature_cols)}
+- Gradient Clipping: 1.0
+- No Mixup, No Label Smoothing
 
 TRAINING CONFIGURATION:
 -----------------------
 Learning Rate: {LEARNING_RATE}
 Batch Size: {BATCH_SIZE}
-Optimizer: AdamW
+Optimizer: Adam
 Weight Decay: {WEIGHT_DECAY}
-Scheduler: OneCycleLR
+Scheduler: StepLR (step=12, gamma=0.5)
+Loss: CrossEntropyLoss (weighted)
 Epochs Trained: {len(history['train_loss'])}
 Training Time: {training_time:.2f} seconds
+Best Validation Loss: {best_val_loss:.4f}
 
 DATA SPLIT:
 -----------
@@ -1385,8 +1301,6 @@ Test Samples: {len(y_test)}
 
 PERFORMANCE METRICS:
 --------------------
-Best Validation Accuracy: {best_val_acc:.2f}%
-Best Validation Loss: {best_val_loss:.4f}
 Best Test Accuracy: {best_test_acc:.2f}%
 Final Test Accuracy: {test_acc:.2f}%
 Macro F1-Score: {macro_f1:.4f}

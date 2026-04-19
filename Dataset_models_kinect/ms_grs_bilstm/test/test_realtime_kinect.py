@@ -1007,26 +1007,24 @@ def draw_skel(fr, jp, ts=None, sx=1.0, sy=1.0):
         cv2.circle(fr, pt, 5, jc, -1)
         cv2.circle(fr, pt, 5, (0,0,0), 1)
 
-
 def draw_hud(fr, lbl, conf, prbs, fps, stats):
     H, W = fr.shape[:2]
     
-    # Dark overlay
-    ov = fr.copy()
-    cv2.rectangle(ov, (0,0), (W,180), (15,15,15), -1)
-    cv2.addWeighted(ov, 0.75, fr, 0.25, 0, fr)
-    
-    # Activity label
+    # Activity label (with outline for visibility)
     ld = lbl.upper() if lbl else "N/A"
     lc = ((0,255,100) if conf >= 0.7 and "Uncertain" not in lbl
           else (0,230,255) if conf >= 0.5
           else (100,100,255))
-    cv2.putText(fr, f"Activity: {ld}",
-                (15,45), FONT, 1.0, lc, 2, cv2.LINE_AA)
     
-    # Confidence
-    cv2.putText(fr, f"Confidence: {conf*100:.1f}%",
-                (15,80), FONT, 0.55, (200,200,200), 1, cv2.LINE_AA)
+    # Draw text with black outline for better visibility
+    text_pos = (15, 45)
+    cv2.putText(fr, f"Activity: {ld}", text_pos, FONT, 1.0, (0,0,0), 4, cv2.LINE_AA)  # Outline
+    cv2.putText(fr, f"Activity: {ld}", text_pos, FONT, 1.0, lc, 2, cv2.LINE_AA)  # Main text
+    
+    # Confidence with outline
+    conf_pos = (15, 80)
+    cv2.putText(fr, f"Confidence: {conf*100:.1f}%", conf_pos, FONT, 0.55, (0,0,0), 3, cv2.LINE_AA)
+    cv2.putText(fr, f"Confidence: {conf*100:.1f}%", conf_pos, FONT, 0.55, (200,200,200), 1, cv2.LINE_AA)
     
     # Confidence bar
     bxs, bxe = 200, W-260
@@ -1035,51 +1033,130 @@ def draw_hud(fr, lbl, conf, prbs, fps, stats):
           else (0,180,255) if conf >= 0.5
           else (0,0,200))
     cv2.rectangle(fr, (bxs,65), (bxs+bw,85), bc, -1)
-    cv2.rectangle(fr, (bxs,65), (bxe,85), (100,100,100), 1)
+    cv2.rectangle(fr, (bxs,65), (bxe,85), (100,100,100), 2)
     
     # Stats line
     bf = stats['buffer_fill']
     cal = "✓" if stats['calibrated'] else "..."
     skip_rate = stats['skip_rate']
     
-    cv2.putText(fr,
-                f"FPS:{fps:.0f} | Buf:{bf:.0f}% | Inf:{stats.get('inf_ms', 0):.0f}ms | "
-                f"Skip:{skip_rate:.1f}% | Cal:{cal}",
-                (15,120), FONT, 0.48, (180,180,180), 1, cv2.LINE_AA)
+    stats_text = (f"FPS:{fps:.0f} | Buf:{bf:.0f}% | Inf:{stats.get('inf_ms', 0):.0f}ms | "
+                  f"Skip:{skip_rate:.1f}% | Cal:{cal}")
+    stats_pos = (15, 120)
+    cv2.putText(fr, stats_text, stats_pos, FONT, 0.48, (0,0,0), 3, cv2.LINE_AA)
+    cv2.putText(fr, stats_text, stats_pos, FONT, 0.48, (180,180,180), 1, cv2.LINE_AA)
     
     # Buffer bar
     bbw = int(180 * (bf/100.0))
     cv2.rectangle(fr, (15,130), (15+bbw,142), (255,200,0), -1)
-    cv2.rectangle(fr, (15,130), (195,142), (100,100,100), 1)
+    cv2.rectangle(fr, (15,130), (195,142), (100,100,100), 2)
     
     # Motion info
     motion_info = stats.get('motion_info', '')
     if motion_info:
-        cv2.putText(fr, f"Motion: {motion_info}",
-                    (15,162), FONT, 0.42, (150,200,255), 1, cv2.LINE_AA)
+        motion_pos = (15, 162)
+        cv2.putText(fr, f"Motion: {motion_info}", motion_pos, FONT, 0.42, (0,0,0), 3, cv2.LINE_AA)
+        cv2.putText(fr, f"Motion: {motion_info}", motion_pos, FONT, 0.42, (150,200,255), 1, cv2.LINE_AA)
     
-    # Probabilities panel
+    # Probabilities panel (NO BACKGROUND)
     if prbs:
         sp = sorted(prbs.items(), key=lambda x: x[1], reverse=True)
         px, py = W-245, 150
-        ph = min(len(sp), 6) * 30 + 10
         
-        o2 = fr.copy()
-        cv2.rectangle(o2, (px-10,py-10), (W-5, py+ph), (15,15,15), -1)
-        cv2.addWeighted(o2, 0.75, fr, 0.25, 0, fr)
-        
-        cv2.putText(fr, "Probabilities:",
-                    (px-5, py+5), FONT, 0.45, (200,200,200), 1, cv2.LINE_AA)
+        # Title with outline
+        title_pos = (px-5, py+5)
+        cv2.putText(fr, "Probabilities:", title_pos, FONT, 0.45, (0,0,0), 3, cv2.LINE_AA)
+        cv2.putText(fr, "Probabilities:", title_pos, FONT, 0.45, (200,200,200), 1, cv2.LINE_AA)
         
         for i, (cn, p) in enumerate(sp[:6]):
             y = py + 20 + i*28
             bl = int(205*p)
             c = ((0,255,120) if cn.lower() in lbl.lower()
                  else (150,110,80))
+            
+            # Probability bar
             cv2.rectangle(fr, (px,y), (px+bl,y+18), c, -1)
-            cv2.rectangle(fr, (px,y), (px+205,y+18), (80,80,80), 1)
-            cv2.putText(fr, f"{cn}:{p*100:.1f}%",
-                        (px+3,y+14), FONT, 0.38, (255,255,255), 1, cv2.LINE_AA)
+            cv2.rectangle(fr, (px,y), (px+205,y+18), (80,80,80), 2)
+            
+            # Text with outline
+            prob_text = f"{cn}:{p*100:.1f}%"
+            prob_pos = (px+3, y+14)
+            cv2.putText(fr, prob_text, prob_pos, FONT, 0.38, (0,0,0), 2, cv2.LINE_AA)
+            cv2.putText(fr, prob_text, prob_pos, FONT, 0.38, (255,255,255), 1, cv2.LINE_AA)
+
+            
+# def draw_hud(fr, lbl, conf, prbs, fps, stats):
+#     H, W = fr.shape[:2]
+    
+#     # Dark overlay
+#     ov = fr.copy()
+#     cv2.rectangle(ov, (0,0), (W,180), (15,15,15), -1)
+#     cv2.addWeighted(ov, 0.75, fr, 0.25, 0, fr)
+    
+#     # Activity label
+#     ld = lbl.upper() if lbl else "N/A"
+#     lc = ((0,255,100) if conf >= 0.7 and "Uncertain" not in lbl
+#           else (0,230,255) if conf >= 0.5
+#           else (100,100,255))
+#     cv2.putText(fr, f"Activity: {ld}",
+#                 (15,45), FONT, 1.0, lc, 2, cv2.LINE_AA)
+    
+#     # Confidence
+#     cv2.putText(fr, f"Confidence: {conf*100:.1f}%",
+#                 (15,80), FONT, 0.55, (200,200,200), 1, cv2.LINE_AA)
+    
+#     # Confidence bar
+#     bxs, bxe = 200, W-260
+#     bw = int((bxe-bxs) * min(conf, 1.0))
+#     bc = ((0,200,0) if conf >= 0.7
+#           else (0,180,255) if conf >= 0.5
+#           else (0,0,200))
+#     cv2.rectangle(fr, (bxs,65), (bxs+bw,85), bc, -1)
+#     cv2.rectangle(fr, (bxs,65), (bxe,85), (100,100,100), 1)
+    
+#     # Stats line
+#     bf = stats['buffer_fill']
+#     cal = "✓" if stats['calibrated'] else "..."
+#     skip_rate = stats['skip_rate']
+    
+#     cv2.putText(fr,
+#                 f"FPS:{fps:.0f} | Buf:{bf:.0f}% | Inf:{stats.get('inf_ms', 0):.0f}ms | "
+#                 f"Skip:{skip_rate:.1f}% | Cal:{cal}",
+#                 (15,120), FONT, 0.48, (180,180,180), 1, cv2.LINE_AA)
+    
+#     # Buffer bar
+#     bbw = int(180 * (bf/100.0))
+#     cv2.rectangle(fr, (15,130), (15+bbw,142), (255,200,0), -1)
+#     cv2.rectangle(fr, (15,130), (195,142), (100,100,100), 1)
+    
+#     # Motion info
+#     motion_info = stats.get('motion_info', '')
+#     if motion_info:
+#         cv2.putText(fr, f"Motion: {motion_info}",
+#                     (15,162), FONT, 0.42, (150,200,255), 1, cv2.LINE_AA)
+    
+#     # Probabilities panel
+#     if prbs:
+#         sp = sorted(prbs.items(), key=lambda x: x[1], reverse=True)
+#         px, py = W-245, 150
+#         ph = min(len(sp), 6) * 30 + 10
+        
+#         o2 = fr.copy()
+#         cv2.rectangle(o2, (px-10,py-10), (W-5, py+ph), (15,15,15), -1)
+#         cv2.addWeighted(o2, 0.75, fr, 0.25, 0, fr)
+        
+#         cv2.putText(fr, "Probabilities:",
+#                     (px-5, py+5), FONT, 0.45, (200,200,200), 1, cv2.LINE_AA)
+        
+#         for i, (cn, p) in enumerate(sp[:6]):
+#             y = py + 20 + i*28
+#             bl = int(205*p)
+#             c = ((0,255,120) if cn.lower() in lbl.lower()
+#                  else (150,110,80))
+#             cv2.rectangle(fr, (px,y), (px+bl,y+18), c, -1)
+#             cv2.rectangle(fr, (px,y), (px+205,y+18), (80,80,80), 1)
+#             cv2.putText(fr, f"{cn}:{p*100:.1f}%",
+#                         (px+3,y+14), FONT, 0.38, (255,255,255), 1, cv2.LINE_AA)
 
 
 def draw_no_body(fr):

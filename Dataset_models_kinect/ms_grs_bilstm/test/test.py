@@ -41,7 +41,7 @@ EPOCHS = 20
 LEARNING_RATE = 0.009  #99.8 at 0.005  , 97.97 at 0.009
 RANDOM_SEED = 42
 NUM_SCALES = 3                  # full, stride2, stride4
-OUTPUT_DIR = "Dataset_models_kinect\\ms_grs_bilstm\\test"
+OUTPUT_DIR = "Dataset_models_kinect\\ms_grs_bilstm\\test2"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 MODEL_SAVE = os.path.join(OUTPUT_DIR, "ms_grs_bilstm_model.h5")
 
@@ -295,6 +295,40 @@ def plot_history(history):
     plt.tight_layout()
     plt.show()
 
+import tensorflow as tf
+
+def quantize_model(model_path, quantized_path):
+    """
+    Convert model to TensorFlow Lite with quantization
+    Reduces size by ~4x with minimal accuracy loss
+    """
+    # Load the trained model
+    model = tf.keras.models.load_model(model_path)
+    
+    # Convert to TensorFlow Lite with quantization
+    converter = tf.lite.TFLiteConverter.from_keras_model(model)
+    
+    # Dynamic range quantization (weights: float32 -> int8)
+    converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    
+    # For even more compression (full integer quantization):
+    # converter.target_spec.supported_types = [tf.int8]
+    
+    tflite_model = converter.convert()
+    
+    # Save the quantized model
+    with open(quantized_path, 'wb') as f:
+        f.write(tflite_model)
+    
+    original_size = os.path.getsize(model_path) / (1024 * 1024)
+    quantized_size = os.path.getsize(quantized_path) / (1024 * 1024)
+    
+    print(f"Original model size: {original_size:.2f} MB")
+    print(f"Quantized model size: {quantized_size:.2f} MB")
+    print(f"Compression ratio: {original_size/quantized_size:.2f}x")
+    
+    return tflite_model
+
 # Run pipeline
 if __name__ == "__main__":
     #  Load and prepare dataset (random split by windows)
@@ -308,7 +342,8 @@ if __name__ == "__main__":
     # Plot
 
 
-
+    quantized_model_path = os.path.join(OUTPUT_DIR, "ms_grs_bilstm_quantized.tflite")
+    quantize_model(MODEL_SAVE, quantized_model_path)
 
     # Accuracy & Loss Curve (single figure, loss dashed) 
     plt.figure(figsize=(10,6))
